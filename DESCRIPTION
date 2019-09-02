@@ -1,18 +1,25 @@
 Package: tidyquery
 Type: Package
-Title: Query R Data Frames with SQL
+Title: Query 'R' 'Data Frames' with 'SQL'
 Version: 0.1.0
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
     )
 Maintainer: Ian Cook <ian@cloudera.com>
-Description: Run SQL SELECT statements to query data frame like objects
-    both in memory and out of memory
+Description: Use 'SQL' 'SELECT' statements to query 'data frame' like objects
+    both in memory and out of memory.
 URL: https://github.com/ianmcook/tidyquery
 BugReports: https://github.com/ianmcook/tidyquery/issues
 NeedsCompilation: no
-License: Apache License 2.0 | file LICENSE
+License: Apache License 2.0
 Encoding: UTF-8
+RoxygenNote: 6.1.1
 Imports: 
-    dplyr (>= 0.7.4)
+    dplyr (>= 0.7.4),
+    lubridate (>= 1.6.0),
+    stringr (>= 1.0.0),
+    queryparser (>= 0.1.0.9002)
+Suggests: 
+    nycflights13,
+    testthat (>= 2.1.0)
