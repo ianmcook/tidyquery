@@ -125,9 +125,12 @@ query <- function(data = NULL, sql = NULL) {
     stop("The same alias is assigned to two or more columns in the SELECT list")
   }
   alias_values <- tree$select[alias_names]
+  aliases <- quote_columns(alias_values, as.character(alias_values))
 
   ### where clause ###
   if (!is.null(tree$where)) {
+    # SQL engines typically do not allow column aliases in the WHERE clause
+    # so replace_aliases_with_values() is not called here
     out <- out %>% filter(!!(tree$where[[1]]))
   }
 
@@ -139,7 +142,7 @@ query <- function(data = NULL, sql = NULL) {
 
   ### having clause ###
   if (!is.null(tree$having)) {
-    #tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
+    tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
     out <- out %>% filter(!!(tree$having[[1]]))
   }
 
@@ -148,25 +151,19 @@ query <- function(data = NULL, sql = NULL) {
     cols_to_include_in_summarise <- unname(tree$select[attr(tree$select, "aggregate")])
     out <- out %>% summarise(!!!(cols_to_include_in_summarise)) %>% ungroup()
 
-    if (!is.null(names(tree$select))) {
-      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
+    if (length(aliases) > 0) {
+      out <- out %>% mutate(!!!aliases)
     }
 
     cols_to_add_after_grouping <- tree$select[!attr(tree$select, "aggregate") & !tree$select %in% tree$group_by]
     out <- out %>% mutate(!!!cols_to_add_after_grouping)
 
-    cols_in_desired_order <- as.character(tree$select)
-    if (!is.null(names(tree$select))) {
-      cols_in_desired_order[names(tree$select) != ""] <- names(tree$select)[names(tree$select) != ""]
-    }
-    out <- out %>% select(cols_in_desired_order)
-
   } else if (isTRUE(attr(tree$select, "distinct"))) {
 
     out <- out %>% distinct(!!!(unname(tree$select)))
 
-    if (!is.null(names(tree$select))) {
-      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
+    if (length(aliases) > 0) {
+      out <- out %>% mutate(!!!aliases)
     }
 
   } else {
@@ -175,15 +172,14 @@ query <- function(data = NULL, sql = NULL) {
       out <- out %>% mutate(!!!(unname(tree$select)))
     }
 
-    if (!is.null(names(tree$select))) {
-      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
+    if (length(aliases) > 0) {
+      out <- out %>% mutate(!!!aliases)
     }
 
   }
 
   ### order by clause ###
   if (!is.null(tree$order_by)) {
-    #tree$order_by <- replace_values_with_aliases(tree$order_by, as.character(alias_values), lapply(alias_names, as.name))
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
       tree$order_by <- quote_columns(tree$order_by, as.character(tree$select))
     }
@@ -191,12 +187,19 @@ query <- function(data = NULL, sql = NULL) {
   }
 
   ### select clause stage 3 ###
-  if (!isTRUE(attr(tree, "aggregate")) && !isTRUE(attr(tree$select, "distinct"))) {
+  if (isTRUE(attr(tree, "aggregate"))) {
+
+    cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
+    out <- out %>% select(!!!cols_to_return)
+
+  } else if (!isTRUE(attr(tree$select, "distinct"))) {
+
     if (all(as.character(tree$select) %in% colnames(data))) {
       out <- out %>% select(!!!(tree$select))
     } else {
       out <- out %>% transmute(!!!(tree$select))
     }
+
   }
 
   ### limit clause ###
