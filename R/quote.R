@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-quote_grouping_column <- function(expr, column) {
+quote_column <- function(expr, column) {
   if (deparse(expr) == column)  {
     expr <- as.symbol(deparse(expr))
   }
   if (length(expr) == 1) {
     return(expr)
   } else {
-    return(as.call(lapply(expr, quote_grouping_column, column)))
+    return(as.call(lapply(expr, quote_column, column)))
   }
 }
 
-quote_grouping_columns <- function(exprs, columns) {
+quote_columns <- function(exprs, columns) {
   lapply(exprs, function(expr) {
     for(column in columns) {
-      expr <- quote_grouping_column(expr, column)
+      expr <- quote_column(expr, column)
     }
     expr
   })

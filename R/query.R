@@ -185,7 +185,7 @@ query <- function(data = NULL, sql = NULL) {
   if (!is.null(tree$order_by)) {
     #tree$order_by <- replace_values_with_aliases(tree$order_by, as.character(alias_values), lapply(alias_names, as.name))
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
-      tree$order_by <- quote_grouping_columns(tree$order_by, as.character(tree$select))
+      tree$order_by <- quote_columns(tree$order_by, as.character(tree$select))
     }
     out <- out %>% arrange(!!!(tree$order_by))
   }
