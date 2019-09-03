@@ -148,7 +148,11 @@ query <- function(data = NULL, sql = NULL) {
 
   ### select clause stage 2 ###
   if (isTRUE(attr(tree, "aggregate"))) {
-    cols_to_include_in_summarise <- unname(tree$select[attr(tree$select, "aggregate")])
+
+    cols_to_include_in_summarise <- unique(append(
+      unname(tree$select[attr(tree$select, "aggregate")]),
+      remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
+    ))
     out <- out %>% summarise(!!!(cols_to_include_in_summarise)) %>% ungroup()
 
     if (length(aliases) > 0) {
@@ -181,7 +185,13 @@ query <- function(data = NULL, sql = NULL) {
   ### order by clause ###
   if (!is.null(tree$order_by)) {
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
-      tree$order_by <- quote_columns(tree$order_by, as.character(tree$select))
+      tree$order_by <- quote_columns(
+        tree$order_by,
+        unique(c(
+          as.character(tree$select),
+          as.character(remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")]))
+        ))
+      )
     }
     out <- out %>% arrange(!!!(tree$order_by))
   }
