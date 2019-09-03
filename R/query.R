@@ -139,14 +139,18 @@ query <- function(data = NULL, sql = NULL) {
 
   ### having clause ###
   if (!is.null(tree$having)) {
-    tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
+    #tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
     out <- out %>% filter(!!(tree$having[[1]]))
   }
 
   ### select clause stage 2 ###
   if (isTRUE(attr(tree, "aggregate"))) {
-    cols_to_include_in_summarise <- tree$select[attr(tree$select, "aggregate")]
+    cols_to_include_in_summarise <- unname(tree$select[attr(tree$select, "aggregate")])
     out <- out %>% summarise(!!!(cols_to_include_in_summarise)) %>% ungroup()
+
+    if (!is.null(names(tree$select))) {
+      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
+    }
 
     cols_to_add_after_grouping <- tree$select[!attr(tree$select, "aggregate") & !tree$select %in% tree$group_by]
     out <- out %>% mutate(!!!cols_to_add_after_grouping)
@@ -159,19 +163,27 @@ query <- function(data = NULL, sql = NULL) {
 
   } else if (isTRUE(attr(tree$select, "distinct"))) {
 
-    out <- out %>% distinct(!!!(tree$select))
+    out <- out %>% distinct(!!!(unname(tree$select)))
+
+    if (!is.null(names(tree$select))) {
+      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
+    }
 
   } else {
 
     if (any(!as.character(tree$select) %in% colnames(data))) {
-      out <- out %>% mutate(!!!(tree$select))
+      out <- out %>% mutate(!!!(unname(tree$select)))
+    }
+
+    if (!is.null(names(tree$select))) {
+      out <- out %>% mutate(!!!(tree$select[names(tree$select) != ""])) # should we quote though?
     }
 
   }
 
   ### order by clause ###
   if (!is.null(tree$order_by)) {
-    tree$order_by <- replace_values_with_aliases(tree$order_by, as.character(alias_values), lapply(alias_names, as.name))
+    #tree$order_by <- replace_values_with_aliases(tree$order_by, as.character(alias_values), lapply(alias_names, as.name))
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
       tree$order_by <- quote_grouping_columns(tree$order_by, as.character(tree$select))
     }
