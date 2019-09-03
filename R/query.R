@@ -57,6 +57,7 @@
 #' @importFrom utils head
 #' @export
 query <- function(data = NULL, sql = NULL) {
+
   if (is.null(data) && is.null(sql)) {
     stop("0 arguments passed to query() which requires 1 or 2 arguments")
   }
@@ -74,12 +75,15 @@ query <- function(data = NULL, sql = NULL) {
 
   ### from clause ###
   if (is.null(tree$from)) {
+
     if (!is.data.frame(data) && !inherits(data, "tbl")) {
       stop("When calling query(), you must specify which data frame to query ",
            "in the FROM clause of the SQL statement ",
            "or by passing a data frame as the first argument")
     }
+
   } else {
+
     if (is.data.frame(data) || inherits(data, "tbl")) {
       stop("When calling query(), specify which data frame to query ",
            "using either the first argument or the FROM clause, not both")
@@ -95,6 +99,7 @@ query <- function(data = NULL, sql = NULL) {
     if (!is.data.frame(data) && !inherits(data, "tbl")) {
       stop("The object with the name specified in the FROM clause is not a data frame")
     }
+
   }
 
   out <- data
@@ -129,21 +134,27 @@ query <- function(data = NULL, sql = NULL) {
 
   ### where clause ###
   if (!is.null(tree$where)) {
+
     # SQL engines typically do not allow column aliases in the WHERE clause
     # so replace_aliases_with_values() is not called here
     out <- out %>% filter(!!(tree$where[[1]]))
+
   }
 
   ### group by clause ###
   if (!is.null(tree$group_by)) {
+
     tree$group_by <- replace_aliases_with_values(tree$group_by, alias_names, alias_values)
     out <- out %>% group_by(!!!(tree$group_by))
+
   }
 
   ### having clause ###
   if (!is.null(tree$having)) {
+
     tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
     out <- out %>% filter(!!(tree$having[[1]]))
+
   }
 
   ### select clause stage 2 ###
@@ -184,6 +195,7 @@ query <- function(data = NULL, sql = NULL) {
 
   ### order by clause ###
   if (!is.null(tree$order_by)) {
+
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
       tree$order_by <- quote_columns(
         tree$order_by,
@@ -194,6 +206,7 @@ query <- function(data = NULL, sql = NULL) {
       )
     }
     out <- out %>% arrange(!!!(tree$order_by))
+
   }
 
   ### select clause stage 3 ###
@@ -214,7 +227,9 @@ query <- function(data = NULL, sql = NULL) {
 
   ### limit clause ###
   if (!is.null(tree$limit)) {
+
     out <- out %>% head(n = tree$limit[[1]])
+
   }
 
   out
