@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include compat.R
+NULL
+
 replace_star_with_cols <- function(exprs, cols) {
   is_distinct <- isTRUE(attr(exprs, "distinct"))
   is_star <- as.character(exprs) == "dplyr::everything()"

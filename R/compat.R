@@ -12,23 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @include compat.R
-NULL
-
-remove_desc_from_expression <- function(expr) {
-    if (is.call(expr) && deparse(expr[[1]]) %in% c("dplyr::desc", "desc")) {
-      expr <- expr[[2]]
-    }
-    if (length(expr) == 1) {
-      return(expr)
-    } else {
-      return(as.call(lapply(expr, remove_desc_from_expression)))
-    }
-}
-
-remove_desc_from_expressions <- function(exprs) {
-  if (is.null(exprs)) {
-    return(NULL)
-  }
-  lapply(exprs, remove_desc_from_expression)
+# to avoid problems with expressions longer than about 60 characters
+deparse <- function(expr, width.cutoff = 500, ...) {
+  base::deparse(expr, width.cutoff, ...)
 }

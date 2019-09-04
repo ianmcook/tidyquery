@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include compat.R
+NULL
+
 #' Query an R data frame with SQL
 #'
 #' @description \code{query} takes a SQL \code{SELECT} statement and uses it to
@@ -125,12 +128,20 @@ query <- function(data = NULL, sql = NULL) {
   ### select clause stage 1 ###
   tree$select <- replace_star_with_cols(tree$select, colnames(data))
 
+  final_select_list <- tree$select
+
   alias_names <- names(tree$select)[names(tree$select) != ""]
   if (any(duplicated(alias_names))) {
     stop("The same alias is assigned to two or more columns in the SELECT list")
   }
   alias_values <- tree$select[alias_names]
-  aliases <- quote_columns_in_expressions(alias_values, as.character(alias_values))
+  aliases <- quote_full_expressions(alias_values)
+
+  if (is.null(names(tree$select))) {
+    unaliased_select_exprs <- setdiff(as.character(tree$select), colnames(data))
+  } else {
+    unaliased_select_exprs <- setdiff(as.character(tree$select)[names(tree$select) == ""], colnames(data))
+  }
 
   ### where clause ###
   if (!is.null(tree$where)) {
@@ -184,7 +195,18 @@ query <- function(data = NULL, sql = NULL) {
   } else {
 
     if (any(!as.character(tree$select) %in% colnames(data))) {
+      cols_before <- colnames(out)
       out <- out %>% mutate(!!!(unname(tree$select)))
+      cols_after <- colnames(out)
+
+      new_unaliased_select_exprs <- setdiff(cols_after, c(cols_before, alias_names))
+      if (!identical(new_unaliased_select_exprs, unaliased_select_exprs)) {
+        #warning("One or more long expressions in the SELECT list has no column alias. ",
+        #        "The name of the resulting column is a shortened form of the expression")
+
+        final_select_list[as.character(final_select_list) %in% unaliased_select_exprs] <-
+          lapply(new_unaliased_select_exprs, as.name)
+      }
     }
 
     if (length(aliases) > 0) {
@@ -220,7 +242,7 @@ query <- function(data = NULL, sql = NULL) {
     if (all(as.character(tree$select) %in% colnames(data))) {
       out <- out %>% select(!!!(tree$select))
     } else {
-      out <- out %>% transmute(!!!(quote_full_expressions(tree$select)))
+      out <- out %>% transmute(!!!(quote_full_expressions(final_select_list)))
     }
 
   }

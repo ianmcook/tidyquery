@@ -24,3 +24,10 @@ Suggests:
     nycflights13,
     testthat (>= 2.1.0)
 Remotes: ianmcook/queryparser
+Collate: 
+    'compat.R'
+    'query.R'
+    'quote.R'
+    'remove.R'
+    'replace.R'
+    'unscope.R'

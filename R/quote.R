@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include compat.R
+NULL
+
 quote_column_in_expression <- function(expr, column) {
   if (deparse(expr) == column)  {
     expr <- as.symbol(deparse(expr))

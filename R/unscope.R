@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include compat.R
+NULL
+
 unscope_expression <- function(expr) {
   if (is.call(expr) && is.call(expr[[1]]) && deparse(expr[[1]][[1]]) %in% "::") {
     # package name is in expr[[1]][[2]]
