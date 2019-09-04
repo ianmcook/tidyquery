@@ -1,5 +1,7 @@
 suppressPackageStartupMessages(library(dplyr))
 
+library(nycflights13)
+
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
   card_rank     <<- as_tibble(read.table(file = paste0(base_url, "card_rank.txt"),     header = TRUE, sep = "\t", quote = ""))

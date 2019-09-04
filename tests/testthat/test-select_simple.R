@@ -90,3 +90,19 @@ test_that("Simple SELECT example query #11 returns expected result", {
                         fewest_players = min_players, most_players = max_players)
   )
 })
+
+test_that("Simple SELECT example query #12 returns expected result", {
+  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT red, green, blue FROM crayons;"),
+    crayons %>% select(red, green, blue)
+  )
+})
+
+test_that("Simple SELECT example query #13 returns expected result", {
+  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT ALL red, green, blue FROM crayons;"),
+    crayons %>% select(red, green, blue)
+  )
+})
