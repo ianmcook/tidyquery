@@ -130,7 +130,7 @@ query <- function(data = NULL, sql = NULL) {
     stop("The same alias is assigned to two or more columns in the SELECT list")
   }
   alias_values <- tree$select[alias_names]
-  aliases <- quote_columns(alias_values, as.character(alias_values))
+  aliases <- quote_columns_in_expressions(alias_values, as.character(alias_values))
 
   ### where clause ###
   if (!is.null(tree$where)) {
@@ -197,7 +197,7 @@ query <- function(data = NULL, sql = NULL) {
   if (!is.null(tree$order_by)) {
 
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
-      tree$order_by <- quote_columns(
+      tree$order_by <- quote_columns_in_expressions(
         tree$order_by,
         unique(c(
           as.character(tree$select),
@@ -220,7 +220,7 @@ query <- function(data = NULL, sql = NULL) {
     if (all(as.character(tree$select) %in% colnames(data))) {
       out <- out %>% select(!!!(tree$select))
     } else {
-      out <- out %>% transmute(!!!(quote_columns(tree$select, tree$select)))
+      out <- out %>% transmute(!!!(quote_full_expressions(tree$select)))
     }
 
   }

@@ -12,22 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-quote_column <- function(expr, column) {
+quote_column_in_expression <- function(expr, column) {
   if (deparse(expr) == column)  {
     expr <- as.symbol(deparse(expr))
   }
   if (length(expr) == 1) {
     return(expr)
   } else {
-    return(as.call(lapply(expr, quote_column, column)))
+    return(as.call(lapply(expr, quote_column_in_expression, column)))
   }
 }
 
-quote_columns <- function(exprs, columns) {
+quote_columns_in_expressions <- function(exprs, columns = NULL) {
   lapply(exprs, function(expr) {
     for(column in columns) {
-      expr <- quote_column(expr, column)
+      expr <- quote_column_in_expression(expr, column)
     }
     expr
   })
+}
+
+quote_full_expression <- function(expr) {
+  as.symbol(deparse(expr))
+}
+
+quote_full_expressions <- function(exprs) {
+  lapply(exprs, quote_full_expression)
 }
