@@ -211,21 +211,35 @@ query <- function(data = NULL, sql = NULL) {
       out <- out %>% mutate(!!!(unname(tree$select)))
       cols_after <- colnames(out)
 
-      new_unaliased_select_exprs <- setdiff(cols_after, c(cols_before, alias_names, alias_values))
-      if (!identical(new_unaliased_select_exprs, unaliased_select_exprs)) {
+      new_select_exprs <- setdiff(cols_after, c(cols_before, alias_names, alias_values))
+      if (!identical(new_select_exprs, unaliased_select_exprs)) {
 
         #warning("One or more long expressions in the SELECT list has no column alias. ",
         #        "The name of the resulting column is a shortened form of the expression")
 
-        if (length(new_unaliased_select_exprs) != length(unaliased_select_exprs)) {
+        if (length(new_select_exprs) < length(unaliased_select_exprs)) {
+
           # https://github.com/tidyverse/dplyr/issues/4551
           stop("The SELECT list includes two or more long expressions with no aliases assigned ",
                "to them. You must assign aliases to these expressions")
-        }
 
-        final_select_list[as.character(final_select_list) %in% unaliased_select_exprs] <-
-          lapply(new_unaliased_select_exprs, as.name)
+        } else if (length(new_select_exprs) == length(unaliased_select_exprs)) {
+
+          final_select_list[as.character(final_select_list) %in% unaliased_select_exprs] <-
+            lapply(new_select_exprs, as.name)
+
+        }
       }
+    }
+
+    # when dplyr shortens the expressions in the column names,
+    # then use the aliases instead
+    missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% colnames(out))]
+    if (length(missing_exprs) > 0) {
+      out <- out %>% mutate(!!!missing_exprs)
+      aliases[names(missing_exprs)] <- NULL
+      final_select_list[names(missing_exprs)] <-
+        lapply(names(final_select_list[names(missing_exprs)]), as.name)
     }
 
     if (length(aliases) > 0) {
