@@ -21,6 +21,18 @@ An object of the same class as \code{data}.
 \details{
 If the \code{data} argument is not specified, then the \code{FROM}
   clause of the SQL statement determines which data frame to query.
+
+  The names of data frames and columns are case-sensitive (like in R).
+  Keywords and function names are not case-sensitive (like in SQL).
+
+  It is possible to use this function together with \pkg{dbplyr} to query
+  remote database tables (\code{tbl_sql} objects), but this depends on which
+  database and which backend package (if any) you are using, so results may
+  vary.
+
+  This function is subject to the
+  \href{https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations}{current
+  limitations of the \pkg{queryparser} package}.
 }
 \examples{
 library(dplyr)
