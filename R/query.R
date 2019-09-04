@@ -211,13 +211,13 @@ query <- function(data = NULL, sql = NULL) {
       out <- out %>% mutate(!!!(unname(tree$select)))
       cols_after <- colnames(out)
 
-      new_unaliased_select_exprs <- setdiff(cols_after, c(cols_before, alias_names))
+      new_unaliased_select_exprs <- setdiff(cols_after, c(cols_before, alias_names, alias_values))
       if (!identical(new_unaliased_select_exprs, unaliased_select_exprs)) {
 
         #warning("One or more long expressions in the SELECT list has no column alias. ",
         #        "The name of the resulting column is a shortened form of the expression")
 
-        if(length(new_unaliased_select_exprs) != length(unaliased_select_exprs)) {
+        if (length(new_unaliased_select_exprs) != length(unaliased_select_exprs)) {
           # https://github.com/tidyverse/dplyr/issues/4551
           stop("The SELECT list includes two or more long expressions with no aliases assigned ",
                "to them. You must assign aliases to these expressions")
