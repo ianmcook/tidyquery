@@ -36,7 +36,11 @@ quote_columns_in_expressions <- function(exprs, columns = NULL) {
 }
 
 quote_full_expression <- function(expr) {
-  as.symbol(deparse(expr))
+  if (is.call(expr)) {
+    as.symbol(deparse(expr))
+  } else {
+    expr
+  }
 }
 
 quote_full_expressions <- function(exprs) {
