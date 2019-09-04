@@ -17,7 +17,7 @@ NULL
 
 replace_star_with_cols <- function(exprs, cols) {
   is_distinct <- isTRUE(attr(exprs, "distinct"))
-  is_star <- as.character(exprs) == "dplyr::everything()"
+  is_star <- vapply(exprs, deparse, "") == "dplyr::everything()"
   column_indices <- seq_len(length(exprs))
   if (any(is_star)) {
     for(star in which(is_star)) {

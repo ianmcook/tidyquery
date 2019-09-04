@@ -150,9 +150,9 @@ query <- function(data = NULL, sql = NULL) {
   aliases <- quote_full_expressions(alias_values)
 
   if (is.null(names(tree$select))) {
-    unaliased_select_exprs <- setdiff(as.character(tree$select), colnames(data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, ""), colnames(data))
   } else {
-    unaliased_select_exprs <- setdiff(as.character(tree$select)[names(tree$select) == ""], colnames(data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], colnames(data))
   }
 
   ### where clause ###
@@ -206,7 +206,7 @@ query <- function(data = NULL, sql = NULL) {
 
   } else {
 
-    if (any(!as.character(tree$select) %in% colnames(data))) {
+    if (any(!vapply(tree$select, deparse, "") %in% colnames(data))) {
       cols_before <- colnames(out)
       out <- out %>% mutate(!!!(unname(tree$select)))
       cols_after <- colnames(out)
@@ -241,8 +241,8 @@ query <- function(data = NULL, sql = NULL) {
       tree$order_by <- quote_columns_in_expressions(
         tree$order_by,
         unique(c(
-          as.character(tree$select),
-          as.character(remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")]))
+          vapply(tree$select, deparse, ""),
+          vapply(remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")]), deparse, "")
         ))
       )
     }
@@ -258,7 +258,7 @@ query <- function(data = NULL, sql = NULL) {
 
   } else {
 
-    if (all(as.character(tree$select) %in% colnames(data))) {
+    if (all(vapply(tree$select, deparse, "") %in% colnames(data))) {
       out <- out %>% select(!!!(tree$select))
     } else {
       out <- out %>% transmute(!!!(quote_full_expressions(final_select_list)))
