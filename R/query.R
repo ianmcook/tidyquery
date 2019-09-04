@@ -215,12 +215,12 @@ query <- function(data = NULL, sql = NULL) {
     cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
     out <- out %>% select(!!!cols_to_return)
 
-  } else if (!isTRUE(attr(tree$select, "distinct"))) {
+  } else {
 
     if (all(as.character(tree$select) %in% colnames(data))) {
       out <- out %>% select(!!!(tree$select))
     } else {
-      out <- out %>% transmute(!!!(tree$select))
+      out <- out %>% transmute(!!!(quote_columns(tree$select, tree$select)))
     }
 
   }
