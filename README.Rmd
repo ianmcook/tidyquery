@@ -84,5 +84,4 @@ It is possible to use `query()` with [dbplyr](http://dbplyr.tidyverse.org) to qu
 
 ## Current Limitations
 
-**tidyquery** is subject to the current limitations of the queryparser package. Please see the **Current Limitations** section of the queryparser README on [CRAN](onhttps://cran.r-project.org/package=queryparser/readme/README.html#current-limitations) or [GitHub](https://github.com/ianmcook/queryparser#current-limitations).
-
+**tidyquery** is subject to the current limitations of the queryparser package. Please see the **Current Limitations** section of the queryparser README on [CRAN](https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations) or [GitHub](https://github.com/ianmcook/queryparser#current-limitations).

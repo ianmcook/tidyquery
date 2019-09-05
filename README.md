@@ -122,6 +122,6 @@ backend package (if any) you are using, so results may vary.
 **tidyquery** is subject to the current limitations of the queryparser
 package. Please see the **Current Limitations** section of the
 queryparser README on
-[CRAN](onhttps://cran.r-project.org/package=queryparser/readme/README.html#current-limitations)
+[CRAN](https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations)
 or
 [GitHub](https://github.com/ianmcook/queryparser#current-limitations).
