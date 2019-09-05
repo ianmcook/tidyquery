@@ -7,8 +7,7 @@ Authors@R: c(
     person(family = "Cloudera", role = c("cph"))
     )
 Maintainer: Ian Cook <ian@cloudera.com>
-Description: Use 'SQL' 'SELECT' statements to query 'data frame' like objects
-    both in memory and out of memory.
+Description: Use 'SQL' 'SELECT' statements to query 'R' 'data frames'.
 URL: https://github.com/ianmcook/tidyquery
 BugReports: https://github.com/ianmcook/tidyquery/issues
 NeedsCompilation: no
