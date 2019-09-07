@@ -71,10 +71,15 @@ NULL
 #' @importFrom queryparser parse_query
 #' @importFrom utils head
 #' @export
-query <- function(data = NULL, sql = NULL) {
-
-  if (is.null(data) && is.null(sql)) {
+query <- function(data, sql) {
+  if (missing("data") && missing("sql")) {
     stop("0 arguments passed to query() which requires 1 or 2 arguments")
+  }
+  if (missing("sql")) {
+    sql <- NULL
+  }
+  if (missing("data")) {
+    data <- NULL
   }
   if (!is.data.frame(data) && !inherits(data, "tbl") && is.character(data)) {
     if (is.data.frame(sql) || inherits(sql, "tbl")) {

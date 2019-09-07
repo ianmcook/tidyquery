@@ -4,7 +4,7 @@
 \alias{query}
 \title{Query an R data frame with SQL}
 \usage{
-query(data = NULL, sql = NULL)
+query(data, sql)
 }
 \arguments{
 \item{data}{a data frame or data frame-like object (optional)}
