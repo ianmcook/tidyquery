@@ -1,13 +1,13 @@
 Package: tidyquery
 Type: Package
-Title: Query 'R' 'Data Frames' with 'SQL'
+Title: Query 'R' Data Frames with 'SQL'
 Version: 0.1.0
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
     )
 Maintainer: Ian Cook <ian@cloudera.com>
-Description: Use 'SQL' 'SELECT' statements to query 'R' 'data frames'.
+Description: Use 'SQL' 'SELECT' statements to query 'R' data frames.
 URL: https://github.com/ianmcook/tidyquery
 BugReports: https://github.com/ianmcook/tidyquery/issues
 NeedsCompilation: no
