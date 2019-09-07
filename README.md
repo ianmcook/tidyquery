@@ -11,7 +11,7 @@
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to
 translate SQL queries into R expressions, then it uses
-[dplyr](http://dplyr.tidyverse.org) to evaluate these expressions and
+[dplyr](https://dplyr.tidyverse.org) to evaluate these expressions and
 return results. **tidyquery** does not load data frames into a database;
 it queries them in place.
 
@@ -113,7 +113,7 @@ case-sensitive (like in R) and the names of keywords and function names
 are case-insensitive (like in SQL).
 
 It is possible to use `query()` with
-[dbplyr](http://dbplyr.tidyverse.org) to query remote database tables
+[dbplyr](https://dbplyr.tidyverse.org) to query remote database tables
 (`tbl_sql` objects), but this depends on which database and which
 backend package (if any) you are using, so results may vary.
 
