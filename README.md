@@ -7,6 +7,8 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
+[![Travis build
+status](https://travis-ci.org/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.org/ianmcook/tidyquery)
 <!-- badges: end -->
 
 **tidyquery** runs SQL queries on R data frames.
