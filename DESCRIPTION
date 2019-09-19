@@ -21,6 +21,7 @@ Imports:
     stringr (>= 1.0.0),
     utils
 Suggests: 
+    covr (>= 3.2.0),
     nycflights13,
     testthat (>= 2.1.0)
 Collate: 
