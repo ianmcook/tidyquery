@@ -60,6 +60,7 @@ test_that("Full example #3 returns expected result", {
 })
 
 test_that("Full example #4 returns expected result", {
+  skip_if(packageVersion("queryparser") < "0.1.1.9002", message = "Test requires queryparser 0.1.1.9002 or higher")
   skip_if_not(exists("inventory"), message = "Test data not loaded")
   expect_equal(
     query(
@@ -84,6 +85,7 @@ test_that("Full example #4 returns expected result", {
 })
 
 test_that("Full example #5 returns expected result", {
+  skip_if(packageVersion("queryparser") < "0.1.1.9002", message = "Test requires queryparser 0.1.1.9002 or higher")
   skip_if_not(exists("offices"), message = "Test data not loaded")
   expect_equal(
     query(
@@ -107,6 +109,7 @@ test_that("Full example #5 returns expected result", {
 
 test_that("Full example #6 returns expected result", {
   skip("currently unsupported")
+  skip_if(packageVersion("queryparser") < "0.1.1.9002", message = "Test requires queryparser 0.1.1.9002 or higher")
   skip_if_not(exists("offices"), message = "Test data not loaded")
   patterns <- eval(str2lang(paste0("list(",
     paste0("expr(state_province == '", state.name, "' ~ '", state.abb, "'", collapse = ",\n"),
