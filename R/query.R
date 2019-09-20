@@ -15,6 +15,11 @@
 #' @include compat.R
 NULL
 
+# import something from lubridate and stringr to stop "All declared Imports should be used" NOTE
+#' @importFrom lubridate ymd
+#' @importFrom stringr str_count
+NULL
+
 #' Query an R data frame with SQL
 #'
 #' @description \code{query} takes a SQL \code{SELECT} statement and uses it to
