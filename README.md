@@ -26,14 +26,14 @@ it queries them in place.
 ## Installation
 
 Install the released version of **tidyquery** from
-[CRAN](https://CRAN.R-project.org) with:
+[CRAN](https://CRAN.R-project.org/package=tidyquery) with:
 
 ``` r
 install.packages("tidyquery")
 ```
 
-Or install the development version from [GitHub](https://github.com/)
-with:
+Or install the development version from
+[GitHub](https://github.com/ianmcook/tidyquery) with:
 
 ``` r
 # install.packages("devtools")
