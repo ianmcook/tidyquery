@@ -113,6 +113,9 @@ query <- function(data, sql) {
       stop("When calling query(), specify which data frame to query ",
            "using either the first argument or the FROM clause, not both")
     }
+    if (length(tree$from) > 1) {
+      stop("Joins are not supported")
+    }
     data <- tryCatch({
       eval(tree$from[[1]])
     }, error = function(e) {
