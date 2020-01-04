@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# for compatibility with R versions earlier than 3.6.0
+if (!exists("str2lang")) {
+  str2lang <- function(s) {
+    parse(text = s, keep.source = FALSE)[[1]]
+  }
+}
+
 # to avoid problems with expressions longer than about 60 characters
 deparse <- function(expr, width.cutoff = 500, ...) {
   paste0(trimws(base::deparse(expr, width.cutoff, ...)), collapse = " ")

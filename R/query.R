@@ -106,6 +106,7 @@ query <- function(data, sql) {
            "in the FROM clause of the SQL statement ",
            "or by passing a data frame as the first argument")
     }
+    code <- paste0("<", class(data)[1], ">")
 
   } else {
 
@@ -127,10 +128,14 @@ query <- function(data, sql) {
     if (!is_supported_data_object(data)) {
       stop("The object with the name specified in the FROM clause is not supported data object")
     }
+    code <- tree$from[[1]]
 
   }
 
-  out <- data
+  out <- list(
+    code = code,
+    data = data
+  )
 
   if (inherits(data, "tbl_sql")) { # or "tbl_lazy"?
 
@@ -217,9 +222,9 @@ query <- function(data, sql) {
   } else {
 
     if (any(!vapply(tree$select, deparse, "") %in% colnames(data))) {
-      cols_before <- colnames(out)
+      cols_before <- colnames(out$data)
       out <- out %>% verb("mutate", !!!(unname(tree$select)))
-      cols_after <- colnames(out)
+      cols_after <- colnames(out$data)
 
       new_select_exprs <- setdiff(cols_after, c(cols_before, alias_names, alias_values))
       if (!identical(new_select_exprs, unaliased_select_exprs)) {
@@ -239,7 +244,7 @@ query <- function(data, sql) {
     }
 
     # when dplyr shortens the expressions in the column names, use the aliases instead
-    missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% colnames(out))]
+    missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% colnames(out$data))]
     if (length(missing_exprs) > 0) {
       out <- out %>% verb("mutate", !!!missing_exprs)
       aliases[names(missing_exprs)] <- NULL
@@ -292,9 +297,23 @@ query <- function(data, sql) {
 
   }
 
-  out
+  out$data
 }
 
 verb <- function(input, name, ...) {
-  input %>% eval(str2lang(name))(...)
+  list(
+    code = paste(
+      input$code,
+      paste0(name, "(", deparse_dots(...), ")"),
+      sep = " %>%\n  "
+    ),
+    data = input$data %>% eval(str2lang(name))(...)
+  )
+}
+
+#' @importFrom rlang exprs expr_deparse
+deparse_dots <- function(...) {
+  output <- expr_deparse(exprs(...))
+  output <- substr(output, 8, nchar(output) - 1)
+  output
 }
