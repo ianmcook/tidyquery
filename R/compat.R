@@ -16,3 +16,8 @@
 deparse <- function(expr, width.cutoff = 500, ...) {
   paste0(trimws(base::deparse(expr, width.cutoff, ...)), collapse = " ")
 }
+
+# to support data frame-like objects
+is_supported_data_object <- function(obj) {
+  inherits(obj, c("data.frame", "tbl"))
+}

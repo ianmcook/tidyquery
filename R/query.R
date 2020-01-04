@@ -86,8 +86,8 @@ query <- function(data, sql) {
   if (missing("data")) {
     data <- NULL
   }
-  if (!is.data.frame(data) && !inherits(data, "tbl") && is.character(data)) {
-    if (is.data.frame(sql) || inherits(sql, "tbl")) {
+  if (!is_supported_data_object(data) && is.character(data)) {
+    if (is_supported_data_object(sql)) {
       stop("When calling query() with two arguments, specify the data first and the SQL statement second")
     }
     sql <- data
@@ -101,7 +101,7 @@ query <- function(data, sql) {
   ### from clause ###
   if (is.null(tree$from)) {
 
-    if (!is.data.frame(data) && !inherits(data, "tbl")) {
+    if (!is_supported_data_object(data)) {
       stop("When calling query(), you must specify which data frame to query ",
            "in the FROM clause of the SQL statement ",
            "or by passing a data frame as the first argument")
@@ -109,7 +109,7 @@ query <- function(data, sql) {
 
   } else {
 
-    if (is.data.frame(data) || inherits(data, "tbl")) {
+    if (is_supported_data_object(data)) {
       stop("When calling query(), specify which data frame to query ",
            "using either the first argument or the FROM clause, not both")
     }
@@ -124,8 +124,8 @@ query <- function(data, sql) {
     if (is.null(data)) {
       stop("No data frame exists with the name specified in the FROM clause")
     }
-    if (!is.data.frame(data) && !inherits(data, "tbl")) {
-      stop("The object with the name specified in the FROM clause is not a data frame")
+    if (!is_supported_data_object(data)) {
+      stop("The object with the name specified in the FROM clause is not supported data object")
     }
 
   }
@@ -141,7 +141,7 @@ query <- function(data, sql) {
     stop("query() cannot work with grouped data frames. Use dplyr::ungroup() ",
          "to remove grouping from the data frame before calling query()")
 
-  } else if (!is.data.frame(data)) {
+  } else if (!is_supported_data_object(data)) {
 
     stop("Unsupported data object")
 
