@@ -170,7 +170,7 @@ query <- function(data, sql) {
 
     # SQL engines typically do not allow column aliases in the WHERE clause
     # so replace_aliases_with_values() is not called here
-    out <- out %>% filter(!!(tree$where[[1]]))
+    out <- out %>% verb("filter", !!(tree$where[[1]]))
 
   }
 
@@ -178,7 +178,7 @@ query <- function(data, sql) {
   if (!is.null(tree$group_by)) {
 
     tree$group_by <- replace_aliases_with_values(tree$group_by, alias_names, alias_values)
-    out <- out %>% group_by(!!!(tree$group_by))
+    out <- out %>% verb("group_by", !!!(tree$group_by))
 
   }
 
@@ -186,7 +186,7 @@ query <- function(data, sql) {
   if (!is.null(tree$having)) {
 
     tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
-    out <- out %>% filter(!!(tree$having[[1]]))
+    out <- out %>% verb("filter", !!(tree$having[[1]]))
 
   }
 
@@ -197,28 +197,28 @@ query <- function(data, sql) {
       unname(tree$select[attr(tree$select, "aggregate")]),
       remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
     ))
-    out <- out %>% summarise(!!!(cols_to_include_in_summarise)) %>% ungroup()
+    out <- out %>% verb("summarise", !!!(cols_to_include_in_summarise)) %>% ungroup()
 
     if (length(aliases) > 0) {
-      out <- out %>% mutate(!!!aliases)
+      out <- out %>% verb("mutate", !!!aliases)
     }
 
     cols_to_add_after_grouping <- tree$select[!attr(tree$select, "aggregate") & !tree$select %in% tree$group_by]
-    out <- out %>% mutate(!!!cols_to_add_after_grouping)
+    out <- out %>% verb("mutate", !!!cols_to_add_after_grouping)
 
   } else if (isTRUE(attr(tree$select, "distinct"))) {
 
-    out <- out %>% distinct(!!!(unname(tree$select)))
+    out <- out %>% verb("distinct", !!!(unname(tree$select)))
 
     if (length(aliases) > 0) {
-      out <- out %>% mutate(!!!aliases)
+      out <- out %>% verb("mutate", !!!aliases)
     }
 
   } else {
 
     if (any(!vapply(tree$select, deparse, "") %in% colnames(data))) {
       cols_before <- colnames(out)
-      out <- out %>% mutate(!!!(unname(tree$select)))
+      out <- out %>% verb("mutate", !!!(unname(tree$select)))
       cols_after <- colnames(out)
 
       new_select_exprs <- setdiff(cols_after, c(cols_before, alias_names, alias_values))
@@ -241,14 +241,14 @@ query <- function(data, sql) {
     # when dplyr shortens the expressions in the column names, use the aliases instead
     missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% colnames(out))]
     if (length(missing_exprs) > 0) {
-      out <- out %>% mutate(!!!missing_exprs)
+      out <- out %>% verb("mutate", !!!missing_exprs)
       aliases[names(missing_exprs)] <- NULL
       final_select_list[names(missing_exprs)] <-
         lapply(names(final_select_list[names(missing_exprs)]), as.name)
     }
 
     if (length(aliases) > 0) {
-      out <- out %>% mutate(!!!aliases)
+      out <- out %>% verb("mutate", !!!aliases)
     }
 
   }
@@ -265,7 +265,7 @@ query <- function(data, sql) {
         ))
       )
     }
-    out <- out %>% arrange(!!!(tree$order_by))
+    out <- out %>% verb("arrange", !!!(tree$order_by))
 
   }
 
@@ -273,14 +273,14 @@ query <- function(data, sql) {
   if (isTRUE(attr(tree, "aggregate"))) {
 
     cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
-    out <- out %>% select(!!!cols_to_return)
+    out <- out %>% verb("select", !!!cols_to_return)
 
   } else {
 
     if (all(vapply(tree$select, deparse, "") %in% colnames(data))) {
-      out <- out %>% select(!!!(tree$select))
+      out <- out %>% verb("select", !!!(tree$select))
     } else {
-      out <- out %>% transmute(!!!(quote_full_expressions(final_select_list)))
+      out <- out %>% verb("transmute", !!!(quote_full_expressions(final_select_list)))
     }
 
   }
@@ -288,9 +288,13 @@ query <- function(data, sql) {
   ### limit clause ###
   if (!is.null(tree$limit)) {
 
-    out <- out %>% head(n = tree$limit[[1]])
+    out <- out %>% verb("head", tree$limit[[1]])
 
   }
 
   out
+}
+
+verb <- function(input, name, ...) {
+  input %>% eval(str2lang(name))(...)
 }
