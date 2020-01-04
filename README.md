@@ -77,14 +77,6 @@ This allows `query()` to function like a dplyr verb:
 
 ``` r
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 
 airports %>%
   query("SELECT name, lat, lon ORDER BY lat DESC LIMIT 5")

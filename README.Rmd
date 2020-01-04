@@ -65,7 +65,7 @@ query(
 
 Alternatively, you can pass a data frame as the first argument and a `SELECT` statement as the second argument, omitting the `FROM` clause. This allows `query()` to function like a dplyr verb:
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 
 airports %>%
