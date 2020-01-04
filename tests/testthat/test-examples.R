@@ -108,11 +108,11 @@ test_that("Full example #5 returns expected result", {
 })
 
 test_that("Full example #6 returns expected result", {
-  skip("currently unsupported")
   skip_if(packageVersion("queryparser") < "0.1.1.9002", message = "Test requires queryparser 0.1.1.9002 or higher")
   skip_if_not(exists("offices"), message = "Test data not loaded")
   patterns <- eval(str2lang(paste0("list(",
-    paste0("expr(state_province == '", state.name, "' ~ '", state.abb, "'", collapse = ",\n"),
+    paste0("expr(state_province == '", state.name[state.name %in% offices$state_province], "' ~ '",
+           state.abb[state.name %in% offices$state_province], "'", collapse = ", "),
     "))")))
   expect_equal(
     query(
