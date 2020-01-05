@@ -293,7 +293,10 @@ query <- function(data, sql) {
   ### limit clause ###
   if (!is.null(tree$limit)) {
 
-    out <- out %>% verb("head", tree$limit[[1]])
+    out <- list(
+      code = paste0(out$code, " %>%\n  head(", tree$limit[[1]], ")"),
+      data = out$data %>% head(tree$limit[[1]])
+    )
 
   }
 
