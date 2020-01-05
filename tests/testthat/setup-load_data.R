@@ -1,5 +1,8 @@
 suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(dbplyr))
 library(nycflights13)
+
+iris_db <- tbl_memdb(iris)
 
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
@@ -20,4 +23,3 @@ suppressWarnings(tryCatch({
   invisible(NULL)
 }))
 
-iris_db <- tbl_memdb(iris)
