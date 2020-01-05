@@ -316,7 +316,7 @@ verb <- function(input, name, ...) {
 
 #' @importFrom rlang exprs expr_deparse
 deparse_dots <- function(...) {
-  output <- expr_deparse(exprs(...))
+  output <- paste0(trimws(expr_deparse(exprs(...))), collapse = " ")
   output <- substr(output, 8, nchar(output) - 1)
   output
 }
