@@ -70,15 +70,25 @@ NULL
 #'   LIMIT 100;"
 #'
 #' query(query)
+#' @export
+query <- function(data, sql) {
+  query_(data, sql, TRUE)
+}
+
 #' @importFrom dplyr %>%
 #' @importFrom dplyr mutate transmute select distinct filter summarise group_by arrange
 #' @importFrom dplyr is_grouped_df ungroup
 #' @importFrom queryparser parse_query
 #' @importFrom utils head
-#' @export
-query <- function(data, sql) {
+query_ <- function(data, sql, query = TRUE) {
+  if (query) {
+    fun_name <- "query"
+  } else {
+    fun_name <- "show_query"
+  }
+
   if (missing("data") && missing("sql")) {
-    stop("0 arguments passed to query() which requires 1 or 2 arguments")
+    stop("0 arguments passed to ", fun_name,"() which requires 1 or 2 arguments", call. = FALSE)
   }
   if (missing("sql")) {
     sql <- NULL
@@ -88,12 +98,14 @@ query <- function(data, sql) {
   }
   if (!is_supported_data_object(data) && is.character(data)) {
     if (is_supported_data_object(sql)) {
-      stop("When calling query() with two arguments, specify the data first and the SQL statement second")
+      stop("When calling ", fun_name, "() with two arguments, ",
+           "specify the data first and the SQL statement second", call. = FALSE)
     }
     sql <- data
   }
   if (!is.character(sql) || length(sql) != 1) {
-    stop("The first or second argument to query() must be a character vector of length 1")
+    stop("The first or second argument to ",
+         fun_name, "() must be a character vector of length 1", call. = FALSE)
   }
 
   tree <- parse_query(sql, tidyverse = TRUE)
@@ -102,20 +114,20 @@ query <- function(data, sql) {
   if (is.null(tree$from)) {
 
     if (!is_supported_data_object(data)) {
-      stop("When calling query(), you must specify which data frame to query ",
+      stop("When calling ", fun_name, "(), you must specify which data frame to query ",
            "in the FROM clause of the SQL statement ",
-           "or by passing a data frame as the first argument")
+           "or by passing a data frame as the first argument", call. = FALSE)
     }
     code <- paste0("<", class(data)[1], ">")
 
   } else {
 
     if (is_supported_data_object(data)) {
-      stop("When calling query(), specify which data frame to query ",
-           "using either the first argument or the FROM clause, not both")
+      stop("When calling ", fun_name, "(), specify which data frame to query ",
+           "using either the first argument or the FROM clause, not both", call. = FALSE)
     }
     if (length(tree$from) > 1) {
-      stop("Joins are not supported")
+      stop("Joins are not supported", call. = FALSE)
     }
     data <- tryCatch({
       eval(tree$from[[1]])
@@ -123,13 +135,17 @@ query <- function(data, sql) {
       NULL
     })
     if (is.null(data)) {
-      stop("No data frame exists with the name specified in the FROM clause")
+      stop("No data frame exists with the name specified in the FROM clause", call. = FALSE)
     }
     if (!is_supported_data_object(data)) {
-      stop("The object with the name specified in the FROM clause is not supported data object")
+      stop("The object with the name specified in the FROM clause is not supported data object", call. = FALSE)
     }
     code <- tree$from[[1]]
 
+  }
+
+  if (!query) {
+    data <- data %>% head(0L)
   }
 
   out <- list(
@@ -143,12 +159,12 @@ query <- function(data, sql) {
 
   } else if (is_grouped_df(data)) {
 
-    stop("query() cannot work with grouped data frames. Use dplyr::ungroup() ",
-         "to remove grouping from the data frame before calling query()")
+    stop(fun_name, "() cannot work with grouped data frames. Use dplyr::ungroup() ",
+         "to remove grouping from the data frame before calling ", fun_name, "()", call. = FALSE)
 
   } else if (!is_supported_data_object(data)) {
 
-    stop("Unsupported data object")
+    stop("Unsupported data object", call. = FALSE)
 
   }
 
@@ -159,7 +175,7 @@ query <- function(data, sql) {
 
   alias_names <- names(tree$select)[names(tree$select) != ""]
   if (any(duplicated(alias_names))) {
-    stop("The same alias is assigned to two or more columns in the SELECT list")
+    stop("The same alias is assigned to two or more columns in the SELECT list", call. = FALSE)
   }
   alias_values <- tree$select[alias_names]
   aliases <- quote_full_expressions(alias_values)
@@ -234,7 +250,7 @@ query <- function(data, sql) {
         if (length(new_select_exprs) < length(unaliased_select_exprs)) {
 
           stop("The SELECT list includes two or more long expressions with no aliases assigned ",
-               "to them. You must assign aliases to these expressions")
+               "to them. You must assign aliases to these expressions", call. = FALSE)
 
         } else if (length(new_select_exprs) == length(unaliased_select_exprs)) {
 
@@ -303,7 +319,12 @@ query <- function(data, sql) {
 
   }
 
-  out$data
+  if (query) {
+    out$data
+  } else {
+    cat(out$code)
+    invisible(NULL)
+  }
 }
 
 verb <- function(input, name, ...) {
