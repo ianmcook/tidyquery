@@ -29,7 +29,11 @@ is_supported_data_object <- function(obj) {
   inherits(obj, c("data.frame", "tbl", "dtplyr_step", "disk.frame"))
 }
 is_grouped_data_object <- function(obj) {
-  inherits(obj, c("grouped_df", "dtplyr_step_group", "grouped_disk.frame")) # TBD: also identify grouped tbl_sql objects
+  if (inherits(obj, "tbl_sql") && ("dbplyr" %in% .packages(all.available = TRUE))) {
+    length(dbplyr::op_grps(obj)) > 0
+  } else {
+    inherits(obj, c("grouped_df", "dtplyr_step_group", "grouped_disk.frame"))
+  }
 }
 data_object_uses_function_translations <- function(obj) {
    inherits(obj, c("tbl_sql", "dtplyr_step", "disk.frame"))
