@@ -202,7 +202,7 @@ query <- function(data, sql) {
       unname(tree$select[attr(tree$select, "aggregate")]),
       remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
     ))
-    out <- out %>% verb("summarise", !!!(cols_to_include_in_summarise)) %>% ungroup()
+    out <- out %>% verb("summarise", !!!(cols_to_include_in_summarise)) %>% verb("ungroup")
 
     if (length(aliases) > 0) {
       out <- out %>% verb("mutate", !!!aliases)
