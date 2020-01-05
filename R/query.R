@@ -84,7 +84,7 @@ query_ <- function(data, sql, query = TRUE) {
   if (query) {
     fun_name <- "query"
   } else {
-    fun_name <- "show_query"
+    fun_name <- "show_dplyr"
   }
 
   if (missing("data") && missing("sql")) {
