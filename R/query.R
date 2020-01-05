@@ -280,6 +280,7 @@ query <- function(data, sql) {
   if (isTRUE(attr(tree, "aggregate"))) {
 
     cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
+    cols_to_return <- lapply(cols_to_return, as.name)
     out <- out %>% verb("select", !!!cols_to_return)
 
   } else {
