@@ -209,7 +209,9 @@ query <- function(data, sql) {
     }
 
     cols_to_add_after_grouping <- tree$select[!attr(tree$select, "aggregate") & !tree$select %in% tree$group_by]
-    out <- out %>% verb("mutate", !!!cols_to_add_after_grouping)
+    if (length(cols_to_add_after_grouping) > 0) {
+      out <- out %>% verb("mutate", !!!cols_to_add_after_grouping)
+    }
 
   } else if (isTRUE(attr(tree$select, "distinct"))) {
 
