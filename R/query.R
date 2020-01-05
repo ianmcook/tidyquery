@@ -77,7 +77,7 @@ query <- function(data, sql) {
 
 #' @importFrom dplyr %>%
 #' @importFrom dplyr mutate transmute select distinct filter summarise group_by arrange
-#' @importFrom dplyr is_grouped_df ungroup
+#' @importFrom dplyr ungroup
 #' @importFrom queryparser parse_query
 #' @importFrom utils head
 query_ <- function(data, sql, query = TRUE) {
@@ -153,19 +153,15 @@ query_ <- function(data, sql, query = TRUE) {
     data = data
   )
 
-  if (inherits(data, "tbl_sql")) { # or "tbl_lazy"?
-
-    tree <- unscope_all_expressions(tree)
-
-  } else if (is_grouped_df(data)) {
-
+  if (!is_supported_data_object(data)) {
+    stop("Unsupported data object", call. = FALSE)
+  }
+  if (is_grouped_data_object(data)) {
     stop(fun_name, "() cannot work with grouped data frames. Use dplyr::ungroup() ",
          "to remove grouping from the data frame before calling ", fun_name, "()", call. = FALSE)
-
-  } else if (!is_supported_data_object(data)) {
-
-    stop("Unsupported data object", call. = FALSE)
-
+  }
+  if (data_object_uses_function_translations(data)) {
+    tree <- unscope_all_expressions(tree)
   }
 
   ### select clause stage 1 ###

@@ -26,5 +26,11 @@ deparse <- function(expr, width.cutoff = 500, ...) {
 
 # to support data frame-like objects
 is_supported_data_object <- function(obj) {
-  inherits(obj, c("data.frame", "tbl"))
+  inherits(obj, c("data.frame", "tbl", "dtplyr_step", "disk.frame"))
+}
+is_grouped_data_object <- function(obj) {
+  inherits(obj, c("grouped_df", "dtplyr_step_group", "grouped_disk.frame")) # TBD: also identify grouped tbl_sql objects
+}
+data_object_uses_function_translations <- function(obj) {
+   inherits(obj, c("tbl_sql", "dtplyr_step", "disk.frame"))
 }

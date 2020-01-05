@@ -1,7 +1,7 @@
 Package: tidyquery
 Type: Package
 Title: Query 'R' Data Frames with 'SQL'
-Version: 0.1.0.9001
+Version: 0.1.0.9002
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
@@ -23,7 +23,9 @@ Imports:
     utils
 Suggests: 
     covr (>= 3.2.0),
+    disk.frame (>= 0.3.1),
     dbplyr (>= 1.2.1),
+    dtplyr (>= 1.0.0),
     nycflights13,
     RSQLite (>= 2.1.0),
     testthat (>= 2.1.0)
