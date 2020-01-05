@@ -31,4 +31,5 @@ Collate:
     'quote.R'
     'remove.R'
     'replace.R'
+    'show_dplyr.R'
     'unscope.R'
