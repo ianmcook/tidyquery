@@ -23,6 +23,7 @@ Imports:
     utils
 Suggests: 
     covr (>= 3.2.0),
+    dbplyr (>= 1.2.1),
     nycflights13,
     testthat (>= 2.1.0)
 Collate: 

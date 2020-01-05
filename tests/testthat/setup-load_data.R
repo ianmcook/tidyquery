@@ -1,9 +1,10 @@
 suppressPackageStartupMessages(library(dplyr))
-
 library(nycflights13)
+suppressPackageStartupMessages(library(dbplyr))
 
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
+
   card_rank     <<- as_tibble(read.table(file = paste0(base_url, "card_rank.txt"),     header = TRUE, sep = "\t", quote = ""))
   card_suit     <<- as_tibble(read.table(file = paste0(base_url, "card_suit.txt"),     header = TRUE, sep = "\t", quote = ""))
   crayons       <<- as_tibble(read.table(file = paste0(base_url, "crayons.txt"),       header = TRUE, sep = "\t", quote = ""))
@@ -16,6 +17,9 @@ suppressWarnings(tryCatch({
   orders        <<- as_tibble(read.table(file = paste0(base_url, "orders.txt"),        header = TRUE, sep = "\t", quote = ""))
   salary_grades <<- as_tibble(read.table(file = paste0(base_url, "salary_grades.txt"), header = TRUE, sep = "\t", quote = ""))
   toys          <<- as_tibble(read.table(file = paste0(base_url, "toys.txt"),          header = TRUE, sep = "\t", quote = ""))
+
+  iris_db       <<- tbl_memdb(iris)
+
   invisible(NULL)
 }, error = function(e) {
   invisible(NULL)
