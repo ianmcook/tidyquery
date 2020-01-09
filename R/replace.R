@@ -73,3 +73,20 @@ replace_values_with_aliases <- function(exprs, values, aliases) {
     expr
   })
 }
+
+replace_empty_name_with_value <- function(name_, value) {
+  if (name_ != "") {
+    as.name(name_)
+  } else {
+    value
+  }
+}
+
+replace_empty_names_with_values <- function(names_, values) {
+  mapply(
+    replace_empty_name_with_value,
+    name_ = names_,
+    value = values,
+    USE.NAMES = FALSE
+  )
+}

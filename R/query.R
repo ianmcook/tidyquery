@@ -307,13 +307,7 @@ query_ <- function(data, sql, query = TRUE) {
       cols_to_return <- as.character(unname(tree$select))
       cols_to_return <- lapply(cols_to_return, as.name)
     } else {
-      cols_to_return <- mapply(function(n, v) {
-        if (n != "") {
-          as.name(n)
-        } else {
-          v
-        }
-      }, n = names(tree$select), v = unname(tree$select), USE.NAMES = FALSE)
+      cols_to_return <- replace_empty_names_with_values(names(tree$select), unname(tree$select))
     }
 
     if (length(cols_to_return) > 0 && length(cols_to_return) < ncol(out$data)) {
