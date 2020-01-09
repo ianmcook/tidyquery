@@ -210,14 +210,23 @@ query_ <- function(data, sql, query = TRUE) {
   ### select clause stage 2 ###
   if (isTRUE(attr(tree, "aggregate"))) {
 
-    cols_to_include_in_summarise <- unique(append(
-      unname(tree$select[attr(tree$select, "aggregate")]),
-      remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
-    ))
-    out <- out %>% verb(summarise, !!!(cols_to_include_in_summarise)) %>% verb(ungroup)
+    nonempty_aliases_as_names <-  lapply(names(tree$select)[names(tree$select) != ""], as.name)
+    unnamed_select_exprs <- tree$select[names(tree$select) == ""]
+    use_quoted_deparsed_expressions <-
+      any(!remove_desc_from_expressions(tree$order_by) %in% append(nonempty_aliases_as_names, unnamed_select_exprs)) ||
+      any(!tree$group_by %in% append(nonempty_aliases_as_names, unnamed_select_exprs))
+    if (use_quoted_deparsed_expressions) {
+      cols_to_include_in_summarise <- unique(append(
+        unname(tree$select[attr(tree$select, "aggregate")]),
+        remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
+      ))
+      out <- out %>% verb(summarise, !!!(cols_to_include_in_summarise)) %>% verb(ungroup)
 
-    if (length(aliases) > 0) {
-      out <- out %>% verb(mutate, !!!aliases)
+      if (length(aliases) > 0) {
+        out <- out %>% verb(mutate, !!!aliases)
+      }
+    } else {
+      out <- out %>% verb(summarise, !!!(tree$select[attr(tree$select, "aggregate")])) %>% verb(ungroup)
     }
 
     cols_to_add_after_grouping <- tree$select[!attr(tree$select, "aggregate") & !tree$select %in% tree$group_by]
@@ -291,9 +300,25 @@ query_ <- function(data, sql, query = TRUE) {
   ### select clause stage 3 ###
   if (isTRUE(attr(tree, "aggregate"))) {
 
-    cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
-    cols_to_return <- lapply(cols_to_return, as.name)
-    out <- out %>% verb(select, !!!cols_to_return)
+    if (use_quoted_deparsed_expressions) {
+      cols_to_return <- as.character(replace_values_with_aliases(tree$select, alias_values, alias_names))
+      cols_to_return <- lapply(cols_to_return, as.name)
+    } else if (is.null(names(tree$select))) {
+      cols_to_return <- as.character(unname(tree$select))
+      cols_to_return <- lapply(cols_to_return, as.name)
+    } else {
+      cols_to_return <- mapply(function(n, v) {
+        if (n != "") {
+          as.name(n)
+        } else {
+          v
+        }
+      }, n = names(tree$select), v = unname(tree$select), USE.NAMES = FALSE)
+    }
+
+    if (length(cols_to_return) > 0 && length(cols_to_return) < ncol(out$data)) {
+      out <- out %>% verb(select, !!!cols_to_return)
+    }
 
   } else {
 
