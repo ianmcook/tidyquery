@@ -83,6 +83,9 @@ replace_empty_name_with_value <- function(name_, value) {
 }
 
 replace_empty_names_with_values <- function(names_, values) {
+  if (is.null(names_)) {
+    names_ <- rep("", length(values))
+  }
   mapply(
     replace_empty_name_with_value,
     name_ = names_,
