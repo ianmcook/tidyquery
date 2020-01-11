@@ -145,15 +145,6 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
-  if (!query) {
-    data <- data %>% head(0L)
-  }
-
-  out <- list(
-    code = code,
-    data = data
-  )
-
   if (!is_supported_data_object(data)) {
     stop("Unsupported data object", call. = FALSE)
   }
@@ -165,9 +156,18 @@ query_ <- function(data, sql, query = TRUE) {
     tree <- unscope_all_expressions(tree)
   }
 
+  if (!query) {
+    data <- data %>% head(0L)
+  }
+
+  out <- list(
+    code = code,
+    data = data
+  )
+
 
   ### select clause stage 1 ###
-  tree$select <- replace_star_with_cols(tree$select, colnames(data))
+  tree$select <- replace_star_with_cols(tree$select, colnames(out$data))
 
   final_select_list <- tree$select
 
@@ -195,9 +195,9 @@ query_ <- function(data, sql, query = TRUE) {
   }
 
   if (is.null(names(tree$select))) {
-    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, ""), colnames(data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, ""), colnames(out$data))
   } else {
-    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], colnames(data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], colnames(out$data))
   }
 
 
@@ -296,7 +296,7 @@ query_ <- function(data, sql, query = TRUE) {
       )
     }
 
-    if (transmute_early && all(vapply(tree$select, deparse, "") %in% colnames(data))) {
+    if (transmute_early && all(vapply(tree$select, deparse, "") %in% colnames(out$data))) {
       out <- out %>% verb(select, !!!(tree$select))
     } else if (transmute_early) {
       out <- out %>% verb(transmute, !!!(tree$select))
