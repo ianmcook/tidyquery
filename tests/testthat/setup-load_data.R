@@ -1,6 +1,7 @@
 suppressPackageStartupMessages(library(dplyr))
-library(nycflights13)
+suppressPackageStartupMessages(library(nycflights13))
 suppressPackageStartupMessages(library(dbplyr))
+suppressPackageStartupMessages(library(dtplyr))
 
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
@@ -19,6 +20,9 @@ suppressWarnings(tryCatch({
   toys          <<- as_tibble(read.table(file = paste0(base_url, "toys.txt"),          header = TRUE, sep = "\t", quote = ""))
 
   iris_db       <<- tbl_memdb(iris)
+
+  iris_dt       <<- lazy_dt(iris)
+  flights_dt    <<- lazy_dt(flights)
 
   invisible(NULL)
 }, error = function(e) {
