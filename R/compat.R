@@ -38,3 +38,10 @@ is_grouped_data_object <- function(obj) {
 data_object_uses_function_translations <- function(obj) {
    inherits(obj, c("tbl_sql", "dtplyr_step", "disk.frame"))
 }
+column_names <- function(obj) {
+  if (inherits(obj, "dtplyr_step")) {
+    obj$vars
+  } else {
+    colnames(obj)
+  }
+}

@@ -167,7 +167,7 @@ query_ <- function(data, sql, query = TRUE) {
 
 
   ### select clause stage 1 ###
-  tree$select <- replace_star_with_cols(tree$select, colnames(out$data))
+  tree$select <- replace_star_with_cols(tree$select, column_names(out$data))
 
   final_select_list <- tree$select
 
@@ -195,9 +195,9 @@ query_ <- function(data, sql, query = TRUE) {
   }
 
   if (is.null(names(tree$select))) {
-    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, ""), colnames(out$data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, ""), column_names(out$data))
   } else {
-    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], colnames(out$data))
+    unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], column_names(out$data))
   }
 
 
@@ -230,15 +230,15 @@ query_ <- function(data, sql, query = TRUE) {
 
 
   ### select clause stage 2 ###
-  cols_before <- colnames(out$data)
+  cols_before <- column_names(out$data)
 
   # if the ORDER BY or GROUP BY clause refers to one or more aliased expressions defined in the SELECT list
   # not by its alias but using the same expression itself, then set use_quoted_deparsed_expressions to TRUE,
   # indicating that additional steps are necessary to process this query
   if (is.null(names(tree$select))) {
-    aliased_exprs <- setdiff(tree$select, colnames(out$data))
+    aliased_exprs <- setdiff(tree$select, column_names(out$data))
   } else {
-    aliased_exprs <- setdiff(unname(tree$select[names(tree$select) != ""]), colnames(out$data))
+    aliased_exprs <- setdiff(unname(tree$select[names(tree$select) != ""]), column_names(out$data))
   }
   use_quoted_deparsed_expressions <-
     any(remove_desc_from_expressions(tree$order_by) %in% aliased_exprs) || any(tree$group_by %in% aliased_exprs)
@@ -296,7 +296,7 @@ query_ <- function(data, sql, query = TRUE) {
       )
     }
 
-    if (transmute_early && all(vapply(tree$select, deparse, "") %in% colnames(out$data))) {
+    if (transmute_early && all(vapply(tree$select, deparse, "") %in% column_names(out$data))) {
       out <- out %>% verb(select, !!!(tree$select))
     } else if (transmute_early) {
       out <- out %>% verb(transmute, !!!(tree$select))
@@ -308,7 +308,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
-  cols_after <- colnames(out$data)
+  cols_after <- column_names(out$data)
 
   new_select_exprs <- setdiff(
     c(cols_after),
@@ -333,7 +333,7 @@ query_ <- function(data, sql, query = TRUE) {
   if (use_quoted_deparsed_expressions) {
 
     # when dplyr shortens the expressions in the column names, use the aliases instead
-    missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% colnames(out$data))]
+    missing_exprs <- tree$select[which(!vapply(tree$select, deparse, "") %in% column_names(out$data))]
     if (length(missing_exprs) > 0) {
       if (!isTRUE(attr(tree, "aggregate")) || length(setdiff(missing_exprs, cols_to_add_after_grouping)) > 0) {
         out <- out %>% verb(mutate, !!!missing_exprs)
