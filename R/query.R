@@ -110,6 +110,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   tree <- parse_query(sql, tidyverse = TRUE)
 
+
   ### from clause ###
   if (is.null(tree$from)) {
 
@@ -164,6 +165,7 @@ query_ <- function(data, sql, query = TRUE) {
     tree <- unscope_all_expressions(tree)
   }
 
+
   ### select clause stage 1 ###
   tree$select <- replace_star_with_cols(tree$select, colnames(data))
 
@@ -198,6 +200,7 @@ query_ <- function(data, sql, query = TRUE) {
     unaliased_select_exprs <- setdiff(vapply(tree$select, deparse, "")[names(tree$select) == ""], colnames(data))
   }
 
+
   ### where clause ###
   if (!is.null(tree$where)) {
 
@@ -207,6 +210,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
+
   ### group by clause ###
   if (!is.null(tree$group_by)) {
 
@@ -215,6 +219,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
+
   ### having clause ###
   if (!is.null(tree$having)) {
 
@@ -222,6 +227,7 @@ query_ <- function(data, sql, query = TRUE) {
     out <- out %>% verb(filter, !!(tree$having[[1]]))
 
   }
+
 
   ### select clause stage 2 ###
   cols_before <- colnames(out$data)
@@ -343,6 +349,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
+
   ### order by clause ###
   if (!is.null(tree$order_by)) {
 
@@ -358,6 +365,7 @@ query_ <- function(data, sql, query = TRUE) {
     out <- out %>% verb(arrange, !!!(tree$order_by))
 
   }
+
 
   ### select clause stage 3 ###
   if (isTRUE(attr(tree, "aggregate"))) {
@@ -398,6 +406,7 @@ query_ <- function(data, sql, query = TRUE) {
     }
 
   }
+
 
   ### limit clause ###
   if (!is.null(tree$limit)) {
