@@ -113,31 +113,18 @@ join <- function(from) {
 
 
     }
-
-
-
   }
   out
 }
 
-translate_join_condition <- function(condition, left_table_name, right_table_name, left_table_columns, right_table_columns) {
+translate_join_condition <- function(condition, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
   if (is.logical(condition) && isTRUE(is.na(condition))) {
     return(NULL)
   }
-  join_by <- get_join_by(condition, left_table_name, right_table_name, left_table_columns, right_table_columns)
-
-  # traverse the AST
-  # whenver you find a `==`, take its args
-  # check which represents a column in the right table and which represents a column in the left table
-  # remember that the names of left_table_name and right_table_name can have names giving the aliases or can be NULL or ""!
-
-
-
-
-
+  get_join_by(condition, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
 }
 
-get_join_by <- function(expr, left_table_name, right_table_name, left_table_columns, right_table_columns) {
+get_join_by <- function(expr, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
   if (identical(typeof(expr), "language")) {
     if (identical(expr[[1]], quote(`==`))) {
       table_1_ref <- get_prefix(expr[[2]])
@@ -146,15 +133,15 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
       column_2_ref <- remove_prefix(expr[[3]])
       if (identical(column_1_ref, column_2_ref)) {
         if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
-          if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_name), as.character(left_table_name)))) &&
-              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_name), as.character(right_table_name))))) {
+          if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref)))) &&
+              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))))) {
             return(as.character(column_1_ref))
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
         } else if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
-          if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_name), as.character(right_table_name)))) &&
-              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_name), as.character(left_table_name))))) {
+          if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref)))) &&
+              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))))) {
             return(as.character(column_1_ref))
           } else {
             stop("Invalid join conditions", call. = FALSE)
@@ -171,13 +158,13 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
           stop("Invalid join conditions", call. = FALSE)
         }
       } else if (is.null(table_1_ref)) {
-        if (table_2_ref %in% c(names(left_table_name), as.character(left_table_name))) {
+        if (table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
             return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
-        } else if (table_2_ref %in% c(names(right_table_name), as.character(right_table_name))) {
+        } else if (table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
           if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
             return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
           } else {
@@ -187,13 +174,13 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
           stop("Invalid join conditions", call. = FALSE)
         }
       } else if (is.null(table_2_ref)) {
-        if (table_1_ref %in% c(names(left_table_name), as.character(left_table_name))) {
+        if (table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
             return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
-        } else if (table_1_ref %in% c(names(right_table_name), as.character(right_table_name))) {
+        } else if (table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
           if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
             return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
           } else {
@@ -203,8 +190,8 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
           stop("Invalid join conditions", call. = FALSE)
         }
       } else {
-        if (table_1_ref %in% c(names(left_table_name), as.character(left_table_name))) {
-          if (table_2_ref %in% c(names(right_table_name), as.character(right_table_name))) {
+        if (table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
+          if (table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
             if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
               return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
             } else {
@@ -213,8 +200,8 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
-        } else if (table_2_ref %in% c(names(left_table_name), as.character(left_table_name))) {
-          if (table_1_ref %in% c(names(right_table_name), as.character(right_table_name))) {
+        } else if (table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
+          if (table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
             if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
               return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
             } else {
@@ -228,7 +215,7 @@ get_join_by <- function(expr, left_table_name, right_table_name, left_table_colu
         }
       }
     } else {
-      lapply(expr, get_join_by, left_table_name, right_table_name, left_table_columns, right_table_columns)
+      lapply(expr, get_join_by, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
     }
   } else {
     NULL
