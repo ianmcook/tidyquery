@@ -131,7 +131,7 @@ query_ <- function(data, sql, query = TRUE) {
            "using either the first argument or the FROM clause, not both", call. = FALSE)
     }
 
-    out <- join(tree$from)
+    out <- join(tree)
 
     if (length(tree$from) > 1) {
 

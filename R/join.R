@@ -16,27 +16,27 @@
 NULL
 
 #' @importFrom dplyr inner_join left_join right_join full_join semi_join anti_join
-join <- function(from) {
+join <- function(tree) {
 
   out <- list()
 
-  join_types <- attr(from, "join_types")
-  join_conditions <- attr(from, "join_conditions")
+  join_types <- attr(tree$from, "join_types")
+  join_conditions <- attr(tree$from, "join_conditions")
 
-  for (i in seq_along(from)) {
+  for (i in seq_along(tree$from)) {
 
     data <- tryCatch({
-      eval(from[[i]])
+      eval(tree$from[[i]])
     }, error = function(e) {
       NULL
     })
-    code <- from[[i]]
+    code <- tree$from[[i]]
 
     if (is.null(data)) {
-      stop("No data frame exists with the name ", from[[i]], call. = FALSE)
+      stop("No data frame exists with the name ", tree$from[[i]], call. = FALSE)
     }
     if (!is_supported_data_object(data)) {
-      stop("The object with the name ", from[[i]], " is not a supported data object", call. = FALSE)
+      stop("The object with the name ", tree$from[[i]], " is not a supported data object", call. = FALSE)
     }
 
     if (i == 1) {
@@ -47,13 +47,15 @@ join <- function(from) {
     } else {
 
       join_type <- join_types[i - 1]
-      join_condition <- unlist(translate_join_condition(
-        join_conditions[[i - 1]],
-        from[i - 1],
-        from[i],
-        column_names(out$data),
-        column_names(data)
-      ))
+      join_condition <- unlist(
+        translate_join_condition(
+          condition = join_conditions[[i - 1]],
+          left_table_ref = tree$from[i - 1],
+          right_table_ref = tree$from[i],
+          left_table_columns = column_names(out$data),
+          right_table_columns = column_names(data)
+        )
+      )
 
       if (join_type %in% inner_join_types) {
 
@@ -65,7 +67,7 @@ join <- function(from) {
         )
         out$code <- paste0(
           out$code, " %>%\n  ",
-          "inner_join(", from[[i]],
+          "inner_join(", tree$from[[i]],
           ", by = ", deparse(join_condition),
           ", suffix = c(\".x\", \".y\")", # TBD: specify suffixes that match table names/aliases
           ", na_matches = \"never\")"
