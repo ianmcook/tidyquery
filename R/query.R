@@ -119,7 +119,10 @@ query_ <- function(data, sql, query = TRUE) {
            "in the FROM clause of the SQL statement ",
            "or by passing a data frame as the first argument", call. = FALSE)
     }
-    code <- paste0("<", class(data)[1], ">")
+    out <- list()
+    out$data <- data
+    rm(data)
+    out$code <- paste0("<", class(data)[1], ">")
 
   } else {
 
@@ -127,44 +130,35 @@ query_ <- function(data, sql, query = TRUE) {
       stop("When calling ", fun_name, "(), specify which data frame to query ",
            "using either the first argument or the FROM clause, not both", call. = FALSE)
     }
+
+    out <- join(tree$from)
+
     if (length(tree$from) > 1) {
-      stop("Joins are not supported", call. = FALSE)
+
+      # TBD: rename all the ambiguous columns in all the expressions in all the other clauses to how they're renamed
+      # in the above step, and for any expressions in the SELECT list that don't have aliases, set their original names
+      # as the aliases
+      # tree <- qualify_columns( ??? )
+
     }
-    data <- tryCatch({
-      eval(tree$from[[1]])
-    }, error = function(e) {
-      NULL
-    })
-    if (is.null(data)) {
-      stop("No data frame exists with the name specified in the FROM clause", call. = FALSE)
-    }
-    if (!is_supported_data_object(data)) {
-      stop("The object with the name specified in the FROM clause is not supported data object", call. = FALSE)
-    }
-    code <- tree$from[[1]]
 
   }
 
-  if (!is_supported_data_object(data)) {
+  if (!is_supported_data_object(out$data)) {
     stop("Unsupported data object", call. = FALSE)
   }
-  if (is_grouped_data_object(data)) {
+  if (is_grouped_data_object(out$data)) {
     stop(fun_name, "() cannot work with grouped data frames. Use dplyr::ungroup() ",
          "to remove grouping from the data frame before calling ", fun_name, "()", call. = FALSE)
   }
-  if (data_object_uses_function_translations(data)) {
+
+  if (data_object_uses_function_translations(out$data)) {
     tree <- unscope_all_expressions(tree)
   }
 
   if (!query) {
-    data <- data %>% head(0L)
+    out$data <- out$data %>% head(0L)
   }
-
-  out <- list(
-    code = code,
-    data = data
-  )
-
 
   ### select clause stage 1 ###
   tree$select <- replace_star_with_cols(tree$select, column_names(out$data))
@@ -251,7 +245,7 @@ query_ <- function(data, sql, query = TRUE) {
     }
 
     if (use_quoted_deparsed_expressions) {
-      cols_to_include_in_summarise <- unique(append(
+      cols_to_include_in_summarise <- unique(c(
         unname(tree$select[attr(tree$select, "aggregate")]),
         remove_desc_from_expressions(tree$order_by[attr(tree$order_by, "aggregate")])
       ))

@@ -32,6 +32,7 @@ Suggests:
 Collate: 
     'compat.R'
     'query.R'
+    'join.R'
     'quote.R'
     'remove.R'
     'replace.R'
