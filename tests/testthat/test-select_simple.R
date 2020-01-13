@@ -106,3 +106,19 @@ test_that("Simple SELECT example query #13 returns expected result", {
     crayons %>% select(red, green, blue)
   )
 })
+
+test_that("Simple SELECT example query #14 returns expected result", {
+  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT crayons.red, crayons.green, crayons.blue FROM crayons;"),
+    crayons %>% select(red, green, blue)
+  )
+})
+
+test_that("Simple SELECT example query #15 returns expected result", {
+  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT c.red, c.green, c.blue FROM crayons c;"),
+    crayons %>% select(red, green, blue)
+  )
+})
