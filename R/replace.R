@@ -20,7 +20,7 @@ replace_star_with_cols <- function(exprs, cols) {
   is_star <- vapply(exprs, deparse, "") == "dplyr::everything()"
   column_indices <- seq_len(length(exprs))
   if (any(is_star)) {
-    for(star in which(is_star)) {
+    for (star in which(is_star)) {
       exprs <- c(
         exprs[column_indices[column_indices < star]],
         lapply(cols, as.symbol),
@@ -47,7 +47,7 @@ replace_alias_with_value <- function(expr, alias, value) {
 
 replace_aliases_with_values <- function(exprs, aliases, values) {
   lapply(exprs, function(expr) {
-    for(i in seq_along(aliases)) {
+    for (i in seq_along(aliases)) {
       expr <- replace_alias_with_value(expr, aliases[i], values[[i]])
     }
     expr
@@ -67,7 +67,7 @@ replace_value_with_alias <- function(expr, value, alias) {
 
 replace_values_with_aliases <- function(exprs, values, aliases) {
   lapply(exprs, function(expr) {
-    for(i in seq_along(values)) {
+    for (i in seq_along(values)) {
       expr <- replace_value_with_alias(expr, values[i], aliases[[i]])
     }
     expr

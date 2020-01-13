@@ -28,7 +28,7 @@ quote_column_in_expression <- function(expr, column) {
 
 quote_columns_in_expressions <- function(exprs, columns = NULL) {
   lapply(exprs, function(expr) {
-    for(column in columns) {
+    for (column in columns) {
       expr <- quote_column_in_expression(expr, column)
     }
     expr
