@@ -174,7 +174,13 @@ join <- function(tree) {
         out <- out %>% verb(rename, !!!columns_to_rename)
       }
 
-
+      # throw error if there are ambiguous column references
+      ambiguous_column_refs <-
+        (column_refs %in% column_names(data)) & !(column_refs %in% column_names(out$data))
+      if (any(ambiguous_column_refs)) {
+        stop("Query contains ambiguous column reference(s): ",
+             paste0(column_refs[ambiguous_column_refs], collapse = ", "), call. = FALSE)
+      }
 
     }
   }
