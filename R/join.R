@@ -25,6 +25,10 @@ join <- function(tree) {
   join_types <- attr(tree$from, "join_types")
   join_conditions <- attr(tree$from, "join_conditions")
 
+  if (length(tree$from) > 2) {
+    stop("Joins of three or more tables are unsupported", call. = FALSE)
+  }
+
   for (i in seq_along(tree$from)) {
 
     data <- tryCatch({
