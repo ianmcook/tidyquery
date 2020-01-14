@@ -17,6 +17,7 @@ NULL
 
 #' @importFrom dplyr inner_join left_join right_join full_join semi_join anti_join
 #' @importFrom dplyr rename
+#' @importFrom queryparser column_references
 join <- function(tree) {
 
   out <- list()
@@ -38,6 +39,25 @@ join <- function(tree) {
     }
     if (!is_supported_data_object(data)) {
       stop("The object with the name ", tree$from[[i]], " is not a supported data object", call. = FALSE)
+    }
+
+    # throw error if there are misqualified column references
+    table_name <- as.character(tree$from[[i]])
+    if (!is.null(names(tree$from[i])) && names(tree$from[i]) != "") {
+      table_alias <- names(tree$from[i])
+    } else {
+      table_alias <- character(0)
+    }
+    table_prefixes <- c(table_name, table_alias)
+    column_refs <- column_references(tree)
+    qualified_column_refs <-
+      column_refs[grepl(paste0("^(\\Q", paste0(table_prefixes, collapse = "\\E|\\Q"), "\\E)\\."), column_refs)]
+    qualified_column_names <-
+      sub(paste0("^(\\Q", paste0(table_prefixes, collapse = "\\E|\\Q"), "\\E)\\."), "", qualified_column_refs)
+    misqualified_column_refs <- !(qualified_column_names %in% column_names(data))
+    if (any(misqualified_column_refs)) {
+      stop("Query contains misqualified column reference(s): ",
+           paste0(qualified_column_refs[misqualified_column_refs], collapse = ", "), call. = FALSE)
     }
 
     if (i == 1) {
