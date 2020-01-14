@@ -78,7 +78,7 @@ query <- function(data, sql) {
 #' @importFrom dplyr %>%
 #' @importFrom dplyr mutate transmute select distinct filter summarise group_by arrange
 #' @importFrom dplyr ungroup
-#' @importFrom queryparser parse_query
+#' @importFrom queryparser parse_query unqualify_query
 #' @importFrom utils head
 query_ <- function(data, sql, query = TRUE) {
   if (query) {
@@ -135,10 +135,15 @@ query_ <- function(data, sql, query = TRUE) {
 
     if (length(tree$from) > 1) {
 
-      # TBD: rename all the ambiguous columns in all the expressions in all the other clauses to how they're renamed
-      # in the above step, and for any expressions in the SELECT list that don't have aliases, set their original names
-      # as the aliases
-      # tree <- qualify_columns( ??? )
+      # unqualify column references that do not need qualificaiton
+      table_names <- as.character(tree$from)
+      if (!is.null(names(tree$from))) {
+        table_aliases <- names(tree$from)
+      } else {
+        table_aliases <- character(0)
+      }
+      table_prefixes <- c(table_names, table_aliases)
+      tree <- unqualify_query(tree, prefixes = table_prefixes, except = column_names(out$data))
 
     }
 
