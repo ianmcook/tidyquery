@@ -48,3 +48,10 @@ test_that("Join fails on misqualified column reference example #2", {
     "airlines.flight"
   )
 })
+
+test_that("Join fails on ambiguous column reference example #1", {
+  expect_error(
+    query("SELECT name FROM toys t JOIN makers m ON toys.maker_id = makers.id"),
+    "name"
+  )
+})
