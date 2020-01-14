@@ -16,6 +16,7 @@
 NULL
 
 #' @importFrom dplyr inner_join left_join right_join full_join semi_join anti_join
+#' @importFrom dplyr rename
 join <- function(tree) {
 
   out <- list()
@@ -46,30 +47,46 @@ join <- function(tree) {
 
     } else {
 
+      left_table_ref <- tree$from[i - 1]
+      right_table_ref <- tree$from[i]
+      left_table_columns <- column_names(out$data)
+      right_table_columns <- column_names(data)
+
       join_type <- join_types[i - 1]
       join_condition <- unlist(
         translate_join_condition(
           condition = join_conditions[[i - 1]],
-          left_table_ref = tree$from[i - 1],
-          right_table_ref = tree$from[i],
-          left_table_columns = column_names(out$data),
-          right_table_columns = column_names(data)
+          left_table_ref = left_table_ref,
+          right_table_ref = right_table_ref,
+          left_table_columns = left_table_columns,
+          right_table_columns = right_table_columns
         )
       )
+
+      left_table_suffix = replace_empty_name_with_value(names(left_table_ref), as.character(left_table_ref))
+      right_table_suffix = replace_empty_name_with_value(names(right_table_ref), as.character(right_table_ref))
+
+      # check for column names that would make it impossible to identify the non-joined duplicate variables
+      # based on their suffixes after the join
+      if (any(ends_with_suffix(c(left_table_columns, right_table_columns), left_table_suffix)) ||
+          any(ends_with_suffix(c(left_table_columns, right_table_columns), right_table_suffix))) {
+        stop("Names of columns in data must not end with .", left_table_suffix,
+             " or .", right_table_suffix, call. = FALSE)
+      }
 
       if (join_type %in% inner_join_types) {
 
         out$data <- out$data %>% inner_join(
           data,
           by = join_condition,
-          suffix = c(".x", ".y"), # TBD: specify suffixes that match table names/aliases
+          suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
           na_matches = "never"
         )
         out$code <- paste0(
           out$code, " %>%\n  ",
           "inner_join(", tree$from[[i]],
           ", by = ", deparse(join_condition),
-          ", suffix = c(\".x\", \".y\")", # TBD: specify suffixes that match table names/aliases
+          ", suffix = c(\".", left_table_suffix, "\", \".", right_table_suffix, "\")",
           ", na_matches = \"never\")"
         )
 
@@ -112,6 +129,27 @@ join <- function(tree) {
         stop("Unsupported join type", call. = FALSE)
 
       }
+
+      # check for suffixes, and if found, change them to prefixes
+      columns_to_rename <- list()
+      has_left_table_suffix <- ends_with_suffix(column_names(out$data), left_table_suffix)
+      has_right_table_suffix <- ends_with_suffix(column_names(out$data), right_table_suffix)
+      if (any(has_left_table_suffix)) {
+        columns_to_rename <- c(columns_to_rename, structure(
+          column_names(out$data)[has_left_table_suffix],
+          .Names = suffix_to_prefix(column_names(out$data)[has_left_table_suffix], left_table_suffix)
+        ))
+      }
+      if (any(has_right_table_suffix)) {
+        columns_to_rename <- c(columns_to_rename, structure(
+          column_names(out$data)[has_right_table_suffix],
+          .Names = suffix_to_prefix(column_names(out$data)[has_right_table_suffix], right_table_suffix)
+        ))
+      }
+      if (length(columns_to_rename) > 0) {
+        out <- out %>% verb(rename, !!!columns_to_rename)
+      }
+
 
 
     }
@@ -240,6 +278,14 @@ remove_prefix <- function(colname) {
   } else {
     sub("^[^.]+?\\.(.+)$", "\\1", colname)
   }
+}
+
+suffix_to_prefix <- function(name, suffix) {
+  sub(paste0("(.+?)\\.", suffix, "$"), paste0(suffix, ".\\1"), name)
+}
+
+ends_with_suffix <- function(x, suffix) {
+  grepl(paste0("\\.", suffix, "$"), x)
 }
 
 inner_join_types <- c(

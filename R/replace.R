@@ -75,7 +75,7 @@ replace_values_with_aliases <- function(exprs, values, aliases) {
 }
 
 replace_empty_name_with_value <- function(name_, value) {
-  if (name_ != "") {
+  if (!is.null(name_) && name_ != "") {
     as.name(name_)
   } else {
     value
