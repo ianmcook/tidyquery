@@ -1,5 +1,5 @@
 test_that("Inner join example query #1 returns expected result", {
-  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM toys JOIN makers ON toys.maker_id = makers.id"),
     toys %>%
@@ -9,7 +9,7 @@ test_that("Inner join example query #1 returns expected result", {
 })
 
 test_that("Inner join example query #3 returns expected result", {
-  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM toys t JOIN makers m ON toys.maker_id = makers.id"),
     toys %>%
@@ -19,7 +19,7 @@ test_that("Inner join example query #3 returns expected result", {
 })
 
 test_that("Inner join example query #3 returns expected result", {
-  skip_if_not(exists("crayons"), message = "Test data not loaded")
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM toys t JOIN makers m ON t.maker_id = m.id"),
     toys %>%
@@ -36,6 +36,7 @@ test_that("Join fails when column names have suffixes matching table names or al
 })
 
 test_that("Join fails on misqualified column reference example #1", {
+  skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_error(
     query("SELECT concat_ws(' ', 'Now boarding', a.name, 'flight', CAST(a.flight AS string)) FROM flights f JOIN airlines a USING (carrier)"),
     "a.flight"
@@ -43,6 +44,7 @@ test_that("Join fails on misqualified column reference example #1", {
 })
 
 test_that("Join fails on misqualified column reference example #2", {
+  skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_error(
     query("SELECT concat_ws(' ', 'Now boarding', airlines.name, 'flight', CAST(airlines.flight AS string)) FROM flights f JOIN airlines a USING (carrier)"),
     "airlines.flight"
@@ -50,6 +52,7 @@ test_that("Join fails on misqualified column reference example #2", {
 })
 
 test_that("Join fails on ambiguous column reference example #1", {
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
   expect_error(
     query("SELECT name FROM toys t JOIN makers m ON toys.maker_id = makers.id"),
     "name"
