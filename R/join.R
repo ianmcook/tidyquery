@@ -53,7 +53,7 @@ join <- function(tree) {
       table_alias <- character(0)
     }
     table_prefixes <- c(table_name, table_alias)
-    column_refs <- column_references(tree)
+    column_refs <- column_references(tree, from = FALSE)
     qualified_column_refs <-
       column_refs[grepl(paste0("^(\\Q", paste0(table_prefixes, collapse = "\\E|\\Q"), "\\E)\\."), column_refs)]
     qualified_column_names <-
