@@ -361,7 +361,7 @@ test_that("Bad join conditions example #1 variant E fails", {
 test_that("Bad join conditions example #1 variant F fails", {
   skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
   expect_error(
-    query("SELECT * FROM inventory i JOIN games g ON g.name = game"),
+    query("SELECT * FROM inventory i JOIN games g ON g.name = name"),
     "Invalid"
   )
 })
