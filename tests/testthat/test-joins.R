@@ -8,7 +8,7 @@ test_that("Inner join example query #1 returns expected result", {
   )
 })
 
-test_that("Inner join example query #3 returns expected result", {
+test_that("Inner join example query #2 returns expected result", {
   skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM toys t JOIN makers m ON toys.maker_id = makers.id"),
