@@ -570,3 +570,14 @@ test_that("Join fails when data object has unsupported type", {
     "supported"
   )
 })
+
+test_that("Inner join does not match NAs", {
+  expect_equal(
+    {
+      join_test_na_match_data_x <<- data.frame(k1 = c(NA,NA,3,4,5), k2 = c(1,NA,NA,4,5), data = 1:5)
+      join_test_na_match_data_y <<- data.frame(k1 = c(NA,2,NA,4,5), k2 = c(NA,NA,3,4,5), data = 1:5)
+      query("select COUNT(*) FROM join_test_na_match_data_x JOIN join_test_na_match_data_y USING (k1)") %>% pull(1)
+    },
+    2L
+  )
+})
