@@ -43,8 +43,8 @@ devtools::install_github("ianmcook/tidyquery")
 ## Usage
 
 Call the function `query()`, passing a `SELECT` statement enclosed in
-quotes as the first argument. The table name in the `FROM` clause should
-match the name of a data frame in your current R session:
+quotes as the first argument. The table names in the `FROM` clause
+should match the names of data frames in your current R session:
 
 ``` r
 library(tidyquery)
@@ -53,27 +53,28 @@ library(nycflights13)
 query(
 " SELECT origin, dest,
     COUNT(flight) AS num_flts,
-    round(AVG(distance)) AS dist,
+    round(SUM(seats)) AS num_seats,
     round(AVG(arr_delay)) AS avg_delay
-  FROM flights
+  FROM flights f LEFT OUTER JOIN planes p
+    ON f.tailnum = p.tailnum
   WHERE distance BETWEEN 200 AND 300
     AND air_time IS NOT NULL
   GROUP BY origin, dest
   HAVING num_flts > 3000
-  ORDER BY num_flts DESC, avg_delay DESC
-  LIMIT 100;"
+  ORDER BY num_seats DESC, avg_delay ASC
+  LIMIT 2;"
 )
-#> # A tibble: 3 x 5
-#>   origin dest  num_flts  dist avg_delay
-#>   <chr>  <chr>    <int> <dbl>     <dbl>
-#> 1 EWR    BOS       5247   200         5
-#> 2 LGA    DCA       4468   214         6
-#> 3 JFK    DCA       3076   213         8
+#> # A tibble: 2 x 5
+#>   origin dest  num_flts num_seats avg_delay
+#>   <chr>  <chr>    <int>     <dbl>     <dbl>
+#> 1 LGA    DCA       4468    712643         6
+#> 2 EWR    BOS       5247    611192         5
 ```
 
-Alternatively, you can pass a data frame as the first argument and a
-`SELECT` statement as the second argument, omitting the `FROM` clause.
-This allows `query()` to function like a dplyr verb:
+Alternatively, for single-table queries, you can pass a data frame as
+the first argument and a `SELECT` statement as the second argument,
+omitting the `FROM` clause. This allows `query()` to function like a
+dplyr verb:
 
 ``` r
 library(dplyr)
