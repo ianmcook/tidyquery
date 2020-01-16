@@ -114,13 +114,15 @@ case-sensitive (like in R) and the names of keywords and function names
 are case-insensitive (like in SQL).
 
 In addition to R data frames and tibbles (`tbl_df` objects), `query()`
-can be used to query `dtplyr_step` objects created by
-[dtplyr](https://dtplyr.tidyverse.org), a
-[data.table](http://r-datatable.com/) backend for
-[dbplyr](https://dbplyr.tidyverse.org). It is also possible to use this
-function together with dbplyr to query remote database tables (`tbl_sql`
-objects), but this depends on which database and which backend package
-(if any) you are using, so results may vary.
+can be used to query other data frame-like objects, including:
+
+  - `dtplyr_step` objects created with
+    [dtplyr](https://dtplyr.tidyverse.org), a
+    [data.table](http://r-datatable.com/) backend for dplyr
+  - `tbl_sql` objects created with
+    [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package,
+    enabling you to write SQL which is translated to dplyr then
+    translated back to SQL and run in a database 🤪
 
 ## Current Limitations
 
