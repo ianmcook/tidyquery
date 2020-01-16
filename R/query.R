@@ -107,11 +107,9 @@ query_ <- function(data, sql, query = TRUE) {
     }
     sql <- data
   }
-  if (!is.character(sql) || length(sql) != 1) {
-    if (!is.character(data) && length(data) != 1) {
-      stop("The first or second argument to ",
-           fun_name, "() must be a character vector of length 1", call. = FALSE)
-    }
+  if ((!is.character(sql) || length(sql) != 1) && (!is.character(data) || length(data) != 1)) {
+    stop("The first or second argument to ",
+         fun_name, "() must be a character vector of length 1", call. = FALSE)
   }
 
   tree <- parse_query(sql, tidyverse = TRUE)
