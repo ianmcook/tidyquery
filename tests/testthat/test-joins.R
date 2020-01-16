@@ -299,6 +299,17 @@ test_that("Join alias/conditions example #1 variant R returns expected result", 
 test_that("Join alias/conditions example #1 variant S returns expected result", {
   skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
   expect_equal(
+    {
+      games_with_col_renamed <<- games %>% rename(game = name)
+      query("SELECT * FROM inventory i JOIN games_with_col_renamed g ON game = game")
+    },
+    inventory %>% inner_join(games %>% rename(game = name), by = c("game"))
+  )
+})
+
+test_that("Join alias/conditions example #1 variant T returns expected result", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_equal(
     query("SELECT * FROM inventory JOIN games g ON game = g.name"),
     inventory %>% inner_join(games %>% rename(game = name), by = c("game"))
   )
@@ -324,6 +335,41 @@ test_that("Bad join conditions example #1 variant C fails", {
   skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
   expect_error(
     query("SELECT * FROM inventory JOIN games g ON i.foo = i.game"),
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant D fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON name = name"),
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant E fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    {
+      games_with_col_renamed <<- games %>% rename(game = name)
+      query("SELECT * FROM inventory i JOIN games_with_col_renamed g ON name = name")
+    },
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant F fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON g.name = game"),
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant G fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON g.foo = game"),
     "Invalid"
   )
 })
