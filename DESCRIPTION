@@ -38,5 +38,3 @@ Collate:
     'replace.R'
     'show_dplyr.R'
     'unscope.R'
-Remotes:
-    ianmcook/queryparser
