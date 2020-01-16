@@ -102,12 +102,16 @@ query_ <- function(data, sql, query = TRUE) {
     if (is_supported_data_object(sql)) {
       stop("When calling ", fun_name, "() with two arguments, ",
            "specify the data first and the SQL statement second", call. = FALSE)
+    } else if (!is.null(sql)) {
+      stop("Unexpected input to ", fun_name, "()", call. = FALSE)
     }
     sql <- data
   }
   if (!is.character(sql) || length(sql) != 1) {
-    stop("The first or second argument to ",
-         fun_name, "() must be a character vector of length 1", call. = FALSE)
+    if (!is.character(data) && length(data) != 1) {
+      stop("The first or second argument to ",
+           fun_name, "() must be a character vector of length 1", call. = FALSE)
+    }
   }
 
   tree <- parse_query(sql, tidyverse = TRUE)
@@ -151,9 +155,6 @@ query_ <- function(data, sql, query = TRUE) {
 
   }
 
-  if (!is_supported_data_object(out$data)) {
-    stop("Unsupported data object", call. = FALSE)
-  }
   if (is_grouped_data_object(out$data)) {
     stop(fun_name, "() cannot work with grouped data frames. Use dplyr::ungroup() ",
          "to remove grouping from the data frame before calling ", fun_name, "()", call. = FALSE)
