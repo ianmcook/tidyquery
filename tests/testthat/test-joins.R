@@ -531,3 +531,42 @@ test_that("Natural join example query generates the expected message", {
     "office_id"
   )
 })
+
+test_that("Right anti-join fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT name, list_price FROM inventory i RIGHT ANTI JOIN games g ON i.game = g.name"),
+    "Unsupported"
+  )
+})
+
+test_that("Right semi-join fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT name, list_price FROM inventory i RIGHT SEMI JOIN games g ON i.game = g.name"),
+    "Unsupported"
+  )
+})
+
+test_that("Cross join fails", {
+  skip_if_not(exists("card_rank") && exists("card_suit"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT rank, suit FROM card_rank CROSS JOIN card_suit;"),
+    "Unsupported"
+  )
+})
+
+test_that("Join fails when data object does not exist", {
+  expect_error(
+    query("SELECT a FROM a435irawjesz9834are JOIN w3tzldvjsdfkgjwetro USING (b)"),
+    "exist"
+  )
+})
+
+test_that("Join fails when data object has unsupported type", {
+  skip_if_not(exists("letters"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM letters"),
+    "supported"
+  )
+})
