@@ -26,11 +26,25 @@ test_that("query() fails when data frame passed and FROM clause specified", {
   )
 })
 
-test_that("query() fails when data object has unsupported type", {
-  skip_if_not(exists("letters"), message = "Test data not loaded")
+test_that("query() fails when object named in FROM clause has unsupported type", {
   expect_error(
     query("SELECT * FROM letters"),
     "supported"
+  )
+})
+
+test_that("query() fails when object in data argument has unsupported type", {
+  expect_error(
+    letters %>% query("SELECT *"),
+    "Unexpected"
+  )
+})
+
+
+test_that("query() fails when no data is specified in data argument or in FROM clause", {
+  expect_error(
+    query("SELECT *"),
+    "data"
   )
 })
 
