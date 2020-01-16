@@ -29,6 +29,48 @@ test_that("Inner join example query #3 returns expected result", {
 })
 
 test_that("Inner join example query #4 returns expected result", {
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT toys.id AS id, toys.name AS toy, price, maker_id, makers.name AS maker, city
+             FROM toys JOIN makers ON toys.maker_id = makers.id;"),
+    toys %>%
+      inner_join(makers, by = c(maker_id = "id"), suffix = c(".toys", ".makers")) %>%
+      rename(toys.name = "name.toys", makers.name = "name.makers") %>%
+      select(id, toy = toys.name, price, maker_id, maker = makers.name, city)
+  )
+})
+
+test_that("Inner join example query #5 returns expected result", {
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT t.id AS id, t.name AS toy, price, maker_id, m.name AS maker, city
+             FROM toys t JOIN makers m ON t.maker_id = m.id;"),
+    toys %>%
+      inner_join(makers, by = c(maker_id = "id"), suffix = c(".t", ".m")) %>%
+      rename(t.name = "name.t", m.name = "name.m") %>%
+      select(id, toy = t.name, price, maker_id, maker = m.name, city)
+  )
+})
+
+test_that("Inner join example query #6 returns expected result", {
+  skip_if_not(exists("toys") && exists("makers"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT m.name AS maker, AVG(price) AS avg_price
+             FROM toys t JOIN makers m ON t.maker_id = m.id
+             GROUP BY maker
+             ORDER BY avg_price;"),
+    toys %>%
+      inner_join(makers, by = c(maker_id = "id"), suffix = c(".toys", ".makers")) %>%
+      rename(toys.name = "name.toys", makers.name = "name.makers") %>%
+      rename(maker = makers.name) %>%
+      group_by(maker) %>%
+      summarise(avg_price = mean(price, na.rm = TRUE)) %>%
+      ungroup() %>%
+      arrange(avg_price)
+  )
+})
+
+test_that("Inner join example query #7 returns expected result", {
   skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat_ws(' ', 'Now boarding', name, 'flight', CAST(flight AS string))
@@ -39,7 +81,7 @@ test_that("Inner join example query #4 returns expected result", {
   )
 })
 
-test_that("Inner join example query #5 returns expected result", {
+test_that("Inner join example query #8 returns expected result", {
   skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat_ws(' ', 'Now boarding', airlines.name, 'flight', CAST(flight AS string))
@@ -50,7 +92,7 @@ test_that("Inner join example query #5 returns expected result", {
   )
 })
 
-test_that("Inner join example query #6 returns expected result", {
+test_that("Inner join example query #9 returns expected result", {
   skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat_ws(' ', 'Now boarding', a.name, 'flight', CAST(f.flight AS string))
@@ -61,7 +103,7 @@ test_that("Inner join example query #6 returns expected result", {
   )
 })
 
-test_that("Inner join example query #7 returns expected result", {
+test_that("Inner join example query #10 returns expected result", {
   skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat_ws(' ', 'Now boarding', airlines.name, 'flight', CAST(flights.flight AS string))
@@ -288,6 +330,18 @@ test_that("Left anti-join example query #1 returns expected result", {
   )
 })
 
+test_that("Left outer join example query #1 returns expected result", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT empl_id, first_name, e.office_id AS office_id, city
+             FROM employees e LEFT OUTER JOIN offices o
+             ON e.office_id = o.office_id;"),
+    employees %>%
+      left_join(offices, by = "office_id") %>%
+      select(empl_id, first_name, office_id, city)
+  )
+})
+
 test_that("Left outer join fails when query includes qualified join key column from the right table", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_error(
@@ -308,6 +362,18 @@ test_that("Full outer join fails when query includes qualified join key column f
   )
 })
 
+test_that("Right outer join example query #1 returns expected result", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT empl_id, first_name, o.office_id AS office_id, city
+             FROM employees e RIGHT OUTER JOIN offices o
+             ON e.office_id = o.office_id;"),
+    employees %>%
+      right_join(offices, by = "office_id") %>%
+      select(empl_id, first_name, office_id, city)
+  )
+})
+
 test_that("Right outer join fails when query includes qualified join key column from the left table", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_error(
@@ -315,6 +381,18 @@ test_that("Right outer join fails when query includes qualified join key column 
     # with a SQL engine, this query would return one row representing Val Snyder
     query("SELECT first_name, last_name FROM offices o RIGHT OUTER JOIN employees e USING (office_id) WHERE o.office_id IS NULL"),
     "o.office_id"
+  )
+})
+
+test_that("Full outer join example query #1 returns expected result", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT empl_id, first_name, office_id, city
+             FROM employees e FULL OUTER JOIN offices o
+             ON e.office_id = o.office_id;"),
+    employees %>%
+      full_join(offices, by = "office_id") %>%
+      select(empl_id, first_name, office_id, city)
   )
 })
 
@@ -375,5 +453,41 @@ test_that("Full outer join with ON and unqualified conditions fails when query i
     # with a SQL engine, this query would return one row representing Singapore
     query("SELECT city FROM offices o FULL OUTER JOIN employees e ON office_id = office_id WHERE e.office_id IS NULL"),
     "e.office_id"
+  )
+})
+
+test_that("Left outer join example with all clauses returns expected result", {
+  skip_if_not(exists("flights") && exists("planes"), message = "Test data not loaded")
+  expect_equal(
+    {
+      my_query <- "SELECT origin, dest,
+          round(AVG(distance)) AS dist,
+          round(COUNT(*)/10) AS flights_per_year,
+          round(SUM(seats)/10) AS seats_per_year,
+          round(AVG(arr_delay)) AS avg_arr_delay
+        FROM flights f LEFT JOIN planes p
+          ON f.tailnum = p.tailnum
+        WHERE distance BETWEEN 300 AND 400
+        GROUP BY origin, dest
+        HAVING flights_per_year > 100
+        ORDER BY seats_per_year DESC
+        LIMIT 6;"
+      query(my_query)
+    },
+    flights %>%
+      left_join(planes, by = "tailnum", suffix = c(".f", ".p"), na_matches = "never") %>%
+      rename(f.year = "year.f", p.year = "year.p") %>%
+      filter(between(distance, 300, 400)) %>%
+      group_by(origin, dest) %>%
+      filter(round(n() / 10) > 100) %>%
+      summarise(
+        dist = round(mean(distance, na.rm = TRUE)),
+        flights_per_year = round(n() / 10),
+        seats_per_year = round(sum(seats, na.rm = TRUE) / 10),
+        avg_arr_delay = round(mean(arr_delay, na.rm = TRUE))
+      ) %>%
+      ungroup() %>%
+      arrange(desc(seats_per_year)) %>%
+      head(6)
   )
 })
