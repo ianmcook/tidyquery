@@ -471,6 +471,41 @@ test_that("Bad join conditions example #1 variant O fails", {
   )
 })
 
+test_that("Bad join conditions example #1 variant P fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    {
+      games_with_col_renamed <<- games %>% rename(game = name)
+      query("SELECT * FROM inventory i JOIN games_with_col_renamed g ON yyy.game = zzz.game")
+    },
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant Q fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON foo = i.game"),
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant R fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON i.name = g.game"),
+    "Invalid"
+  )
+})
+
+test_that("Bad join conditions example #1 variant S fails", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT * FROM inventory i JOIN games g ON g.game = i.game"),
+    "Invalid"
+  )
+})
+
 test_that("Inner join with two join conditions example query #1 returns expected result", {
   skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
   expect_equal(
