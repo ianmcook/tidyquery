@@ -241,15 +241,11 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
       column_1_ref <- remove_prefix(expr[[2]], table_1_ref)
       column_2_ref <- remove_prefix(expr[[3]], table_2_ref)
       if (identical(column_1_ref, column_2_ref)) {
-        if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
+        if (column_1_ref %in% left_table_columns && column_1_ref %in% right_table_columns) {
           if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref)))) &&
               (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))))) {
             return(as.character(column_1_ref))
-          } else {
-            stop("Invalid join conditions", call. = FALSE)
-          }
-        } else if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
-          if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref)))) &&
+          } else if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref)))) &&
               (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))))) {
             return(as.character(column_1_ref))
           } else {
