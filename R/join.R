@@ -45,6 +45,8 @@ join <- function(tree) {
       stop("The object with the name ", tree$from[[i]], " is not a supported data object", call. = FALSE)
     }
 
+    column_refs <- column_references(tree, from = FALSE)
+
     # throw error if there are misqualified column references
     table_name <- as.character(tree$from[[i]])
     if (!is.null(names(tree$from[i])) && names(tree$from[i]) != "") {
@@ -53,7 +55,6 @@ join <- function(tree) {
       table_alias <- character(0)
     }
     table_prefixes <- c(table_name, table_alias)
-    column_refs <- column_references(tree, from = FALSE)
     qualified_column_refs <-
       column_refs[grepl(paste0("^(\\Q", paste0(table_prefixes, collapse = "\\E|\\Q"), "\\E)\\."), column_refs)]
     qualified_column_names <-
@@ -73,6 +74,13 @@ join <- function(tree) {
 
       left_table_ref <- tree$from[i - 1]
       right_table_ref <- tree$from[i]
+      all_table_refs <- c(
+        if (!is.null(names(left_table_ref)) && names(left_table_ref) != "") names(left_table_ref),
+        as.character(left_table_ref),
+        if (!is.null(names(right_table_ref)) && names(right_table_ref) != "") names(right_table_ref),
+        as.character(right_table_ref)
+      )
+
       left_table_columns <- column_names(out$data)
       right_table_columns <- column_names(data)
 
@@ -80,6 +88,7 @@ join <- function(tree) {
       join_condition <- unlist(
         translate_join_condition(
           condition = join_conditions[[i - 1]],
+          all_table_refs = all_table_refs,
           left_table_ref = left_table_ref,
           right_table_ref = right_table_ref,
           left_table_columns = left_table_columns,
@@ -98,61 +107,89 @@ join <- function(tree) {
              " or .", right_table_suffix, call. = FALSE)
       }
 
-      if (join_type %in% inner_join_types) {
-
-        out$data <- out$data %>% inner_join(
-          data,
-          by = join_condition,
-          suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
-          na_matches = "never"
+      # check for qualified references to join key column(s) from the left or right table that are not returned
+      # by joins in dplyr
+      if (join_type %in% c(left_outer_join_types, full_outer_join_types)) {
+        right_table_refs <- c(
+          as.character(right_table_ref),
+          if (!is.null(names(right_table_ref)) && names(right_table_ref) != "") names(right_table_ref)
         )
-        out$code <- paste0(
-          out$code, " %>%\n  ",
-          "inner_join(", tree$from[[i]],
-          ", by = ", deparse(join_condition),
-          ", suffix = c(\".", left_table_suffix, "\", \".", right_table_suffix, "\")",
-          ", na_matches = \"never\")"
-        )
-
-      } else if (join_type %in% left_outer_join_types) {
-
-        # in a left outer join, check whether the select list contains any references to the columns in the "by" list
-        # that are qualified with the name or alias of the right table; if so, throw an error saying:
-        # In left outer joins, dplyr returns the join key column(s) from the left table. Qualified references to join key column(s) from the right table are unsupported
-
-      } else if (join_type %in% right_outer_join_types) {
-
-        # in a right outer join, check whether the select list contains any references to the columns in the "by" list
-        # that are qualified with the name or alias of the left table; if so, throw an error saying:
-        # In right outer joins, dplyr returns the join key column(s) from the right table. Qualified references to join key column(s) from the left table are unsupported
-
-      } else if (join_type %in% full_outer_join_types) {
-
-        # in a full outer join, check whether the select list contains any references to the columns in the "by" list
-        # that are qualified with the name or alias of the left or right tables; if so, throw an error saying:
-        # In full outer joins, dplyr coalesces the join key column(s) from the right and left tables. Qualified references to join key column(s) are unsupported
-
-      } else if (join_type %in% left_semi_join_types) {
-
-
-
-      } else if (join_type %in% right_semi_join_types) {
-
-
-
-      } else if (join_type %in% left_anti_join_types) {
-
-
-
-      } else if (join_type %in% right_anti_join_types) {
-
-
-
-      } else {
-
-        stop("Unsupported join type", call. = FALSE)
-
+        right_table_join_columns <- paste(right_table_refs, unname(join_condition), sep = ".")
+        bad_right_table_columns <- right_table_join_columns %in% column_refs
       }
+      if (join_type %in% c(right_outer_join_types, full_outer_join_types)) {
+        left_table_refs <- c(
+          as.character(left_table_ref),
+          if (!is.null(names(left_table_ref)) && names(left_table_ref) != "") names(left_table_ref)
+        )
+        left_table_join_columns <- paste(
+          left_table_refs,
+          c(
+            if (is.null(names(join_condition))) join_condition else names(join_condition),
+            unname(join_condition)[names(join_condition) == ""]
+          ),
+          sep = "."
+        )
+        bad_left_table_columns <- left_table_join_columns %in% column_refs
+      }
+      if (join_type %in% left_outer_join_types) {
+        if (any(bad_right_table_columns)) {
+          stop("In left outer joins, dplyr returns only the join key column(s) from the left table. ",
+               "The following qualified references to join key column(s) from the right table are unsupported: ",
+               paste0(right_table_join_columns[bad_right_table_columns], collapse = ", "), call. = FALSE)
+        }
+      } else if (join_type %in% right_outer_join_types) {
+        if (any(bad_left_table_columns)) {
+          stop("In right outer joins, dplyr returns only the join key column(s) from the right table. ",
+               "The following qualified references to join key column(s) from the left table are unsupported: ",
+               paste0(left_table_join_columns[bad_left_table_columns], collapse = ", "), call. = FALSE)
+        }
+      } else if (join_type %in% full_outer_join_types) {
+        if (any(bad_left_table_columns) || any(bad_right_table_columns)) {
+          stop("In full outer joins, dplyr coalesces the join key column(s) from the right and left tables. ",
+               "The following qualified references to join key column(s) are unsupported: ",
+               paste0(c(left_table_join_columns[bad_left_table_columns],
+                 right_table_join_columns[bad_right_table_columns]), collapse = ", "), call. = FALSE)
+        }
+      }
+
+      # determine which dplyr join function to use
+      if (join_type %in% inner_join_types) {
+        join_function <- inner_join
+        join_function_name <- "inner_join"
+      } else if (join_type %in% left_outer_join_types) {
+        join_function <- left_join
+        join_function_name <- "left_join"
+      } else if (join_type %in% right_outer_join_types) {
+        join_function <- right_join
+        join_function_name <- "right_join"
+      } else if (join_type %in% full_outer_join_types) {
+        join_function <- full_join
+        join_function_name <- "full_join"
+      } else if (join_type %in% left_semi_join_types) {
+        join_function <- semi_join
+        join_function_name <- "semi_join"
+      } else if (join_type %in% left_anti_join_types) {
+        join_function <- anti_join
+        join_function_name <- "anti_join"
+      } else {
+        stop("Unsupported join type", call. = FALSE)
+      }
+
+      # perfom the join
+      out$data <- out$data %>% join_function(
+        data,
+        by = join_condition,
+        suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
+        na_matches = "never"
+      )
+      out$code <- paste0(
+        out$code, " %>%\n  ",
+        join_function_name, "(", as.character(right_table_ref),
+        ", by = ", deparse(join_condition),
+        ", suffix = c(\".", left_table_suffix, "\", \".", right_table_suffix, "\")",
+        ", na_matches = \"never\")"
+      )
 
       # check for suffixes, and if found, change them to prefixes
       columns_to_rename <- list()
@@ -183,24 +220,26 @@ join <- function(tree) {
       }
 
     }
+
   }
   out
 }
 
-translate_join_condition <- function(condition, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
+translate_join_condition <- function(condition, all_table_refs, left_table_ref,
+                                     right_table_ref, left_table_columns, right_table_columns) {
   if (is.logical(condition) && isTRUE(is.na(condition))) {
     return(NULL)
   }
-  get_join_by(condition, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
+  get_join_by(condition, all_table_refs, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
 }
 
-get_join_by <- function(expr, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
+get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
   if (identical(typeof(expr), "language")) {
     if (identical(expr[[1]], quote(`==`))) {
-      table_1_ref <- get_prefix(expr[[2]])
-      table_2_ref <- get_prefix(expr[[3]])
-      column_1_ref <- remove_prefix(expr[[2]])
-      column_2_ref <- remove_prefix(expr[[3]])
+      table_1_ref <- get_prefix(expr[[2]], all_table_refs)
+      table_2_ref <- get_prefix(expr[[3]], all_table_refs)
+      column_1_ref <- remove_prefix(expr[[2]], table_1_ref)
+      column_2_ref <- remove_prefix(expr[[3]], table_2_ref)
       if (identical(column_1_ref, column_2_ref)) {
         if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
           if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref)))) &&
@@ -285,37 +324,37 @@ get_join_by <- function(expr, left_table_ref, right_table_ref, left_table_column
         }
       }
     } else {
-      lapply(expr, get_join_by, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
+      lapply(expr, get_join_by, all_table_refs, left_table_ref, right_table_ref, left_table_columns, right_table_columns)
     }
   } else {
     NULL
   }
 }
 
-get_prefix <- function(colname) {
-  colname <- as.character(colname)
-  if (!grepl(".", colname, fixed = TRUE)) {
+get_prefix <- function(col_name, possible_prefixes) {
+  colname <- as.character(col_name)
+  if (!grepl(".", col_name, fixed = TRUE)) {
     NULL
   } else {
-    sub("^([^.]+?)\\..+$", "\\1", colname)
+    sub(paste0("^(\\Q", paste0(possible_prefixes, collapse = "\\E|\\Q"), "\\E)\\..+$"), "\\1", col_name)
   }
 }
 
-remove_prefix <- function(colname) {
-  colname <- as.character(colname)
-  if (!grepl(".", colname, fixed = TRUE)) {
-    colname
+remove_prefix <- function(col_names, prefix) {
+  col_names <- as.character(col_names)
+  if (is.null(prefix) || !any(grepl(".", col_names, fixed = TRUE))) {
+    col_names
   } else {
-    sub("^[^.]+?\\.(.+)$", "\\1", colname)
+    sub(paste0("^\\Q", prefix, "\\E\\.(.+)$"), "\\1", col_names)
   }
 }
 
 suffix_to_prefix <- function(name, suffix) {
-  sub(paste0("(.+?)\\.", suffix, "$"), paste0(suffix, ".\\1"), name)
+  sub(paste0("^(.+?)\\.\\Q", suffix, "\\E$"), paste0(suffix, ".\\1"), name)
 }
 
 ends_with_suffix <- function(x, suffix) {
-  grepl(paste0("\\.", suffix, "$"), x)
+  grepl(paste0("\\.\\Q", suffix, "\\E$"), x)
 }
 
 inner_join_types <- c(
@@ -338,17 +377,9 @@ left_semi_join_types <- c(
   "left semi join",
   "natural left semi join"
 )
-right_semi_join_types <- c(
-  "right semi join",
-  "natural right semi join"
-)
 left_anti_join_types <- c(
   "left anti join",
   "natural left anti join"
-)
-right_anti_join_types <- c(
-  "right anti join",
-  "natural right anti join"
 )
 
 # TBD: implement cross joins after implemented in dplyr
