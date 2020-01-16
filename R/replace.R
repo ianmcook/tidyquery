@@ -54,26 +54,6 @@ replace_aliases_with_values <- function(exprs, aliases, values) {
   })
 }
 
-replace_value_with_alias <- function(expr, value, alias) {
-  if (deparse(expr) == value) {
-    expr <- alias
-  }
-  if (length(expr) == 1) {
-    return(expr)
-  } else {
-    return(as.call(lapply(expr, replace_value_with_alias, value, alias)))
-  }
-}
-
-replace_values_with_aliases <- function(exprs, values, aliases) {
-  lapply(exprs, function(expr) {
-    for (i in seq_along(values)) {
-      expr <- replace_value_with_alias(expr, values[i], aliases[[i]])
-    }
-    expr
-  })
-}
-
 replace_empty_name_with_value <- function(name_, value) {
   if (!is.null(name_) && name_ != "") {
     as.name(name_)
