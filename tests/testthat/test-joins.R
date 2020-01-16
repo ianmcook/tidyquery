@@ -566,7 +566,7 @@ test_that("Join fails when data object does not exist", {
 test_that("Join fails when data object has unsupported type", {
   skip_if_not(exists("letters"), message = "Test data not loaded")
   expect_error(
-    query("SELECT * FROM letters"),
+    query("SELECT * FROM letters NATURAL JOIN state.name"),
     "supported"
   )
 })

@@ -6,6 +6,14 @@ test_that("Simple SELECT example query #1 returns expected result", {
   )
 })
 
+test_that("Simple SELECT example query #1 returns expected result when sql argument is passed by name", {
+  skip_if_not(exists("games"), message = "Test data not loaded")
+  expect_equal(
+    query(sql = "SELECT * FROM games"),
+    games
+  )
+})
+
 test_that("Simple SELECT example query #2 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
