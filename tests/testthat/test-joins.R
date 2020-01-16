@@ -269,3 +269,111 @@ test_that("Inner join with two join conditions example query #2 returns expected
     inventory %>% inner_join(games, by = c(game = "name", price = "list_price"))
   )
 })
+
+test_that("Left semi-join example query #1 returns expected result", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_equal(
+    # names and list prices of games that are in inventory at at least one of the shops
+    query("SELECT name, list_price FROM games g LEFT SEMI JOIN inventory i ON g.name = i.game"),
+    games %>% semi_join(inventory, by = c(name = "game")) %>% select(name, list_price)
+  )
+})
+
+test_that("Left anti-join example query #1 returns expected result", {
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_equal(
+    # names and list prices of games that are not in inventory at any of the shops
+    query("SELECT name, list_price FROM games g LEFT ANTI JOIN inventory i ON g.name = i.game"),
+    games %>% anti_join(inventory, by = c(name = "game")) %>% select(name, list_price)
+  )
+})
+
+test_that("Left outer join fails when query includes qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o LEFT OUTER JOIN employees e USING (office_id) WHERE e.office_id IS NULL"),
+    "e.office_id"
+  )
+})
+
+test_that("Full outer join fails when query includes qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o FULL OUTER JOIN employees e USING (office_id) WHERE e.office_id IS NULL"),
+    "e.office_id"
+  )
+})
+
+test_that("Right outer join fails when query includes qualified join key column from the left table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which employees do not work in an office?
+    # with a SQL engine, this query would return one row representing Val Snyder
+    query("SELECT first_name, last_name FROM offices o RIGHT OUTER JOIN employees e USING (office_id) WHERE o.office_id IS NULL"),
+    "o.office_id"
+  )
+})
+
+test_that("Full outer join fails when query includes qualified join key column from the left table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which employees do not work in an office?
+    # with a SQL engine, this query would return one row representing Val Snyder
+    query("SELECT first_name, last_name FROM offices o FULL OUTER JOIN employees e USING (office_id) WHERE o.office_id IS NULL"),
+    "o.office_id"
+  )
+})
+
+test_that("Full outer join with USING fails when query includes qualified join key columns from both tables", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # return a result set containing the offices that have no employees and the employees who do not work in an office
+    # with a SQL engine, this query would return two rows representing Singapore and Val Snyder
+    query("SELECT city, first_name, last_name FROM offices o FULL OUTER JOIN employees e USING (office_id) WHERE e.office_id IS NULL OR o.office_id IS NULL"),
+    "\\Qo.office_id, e.office_id\\E|\\Qe.office_id, o.office_id\\E"
+  )
+})
+
+test_that("Full outer join with ON and table names fails when query includes qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o FULL OUTER JOIN employees e ON o.office_id = e.office_id WHERE e.office_id IS NULL"),
+    "e.office_id"
+  )
+})
+
+test_that("Full outer join with ON and table aliases fails when query includes qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o FULL OUTER JOIN employees e ON offices.office_id = employees.office_id WHERE e.office_id IS NULL"),
+    "e.office_id"
+  )
+})
+
+test_that("Full outer join with ON fails when query includes table-name-qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o FULL OUTER JOIN employees e ON o.office_id = e.office_id WHERE employees.office_id IS NULL"),
+    "employees.office_id"
+  )
+})
+
+test_that("Full outer join with ON and unqualified conditions fails when query includes qualified join key column from the right table", {
+  skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
+  expect_error(
+    # which city offices have no employees?
+    # with a SQL engine, this query would return one row representing Singapore
+    query("SELECT city FROM offices o FULL OUTER JOIN employees e ON office_id = office_id WHERE e.office_id IS NULL"),
+    "e.office_id"
+  )
+})
