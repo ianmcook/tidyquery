@@ -125,3 +125,12 @@ queryparser README on
 [CRAN](https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations)
 or
 [GitHub](https://github.com/ianmcook/queryparser#current-limitations).
+
+**tidyquery** also has the following additional limitations:
+
+  - Joins involving three or more tables are not supported.
+  - Because joins in dplyr work in a fundamentally different way than
+    joins in SQL, some other types of join queries are not supported.
+    Examples of unsupported join queries include non-equijoin queries
+    and outer join queries with qualified references to the join
+    column(s).
