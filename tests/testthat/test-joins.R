@@ -634,6 +634,20 @@ test_that("Cross join fails", {
   )
 })
 
+test_that("Join with three tables fails", {
+  skip_if_not(exists("employees") && exists("offices") && exists("orders"), message = "Test data not loaded")
+  expect_error(
+    query("SELECT city, SUM(total) total FROM orders LEFT JOIN employees USING (empl_id) LEFT JOIN offices USING (office_id) GROUP BY city"),
+    "unsupported"
+  )
+  # if it were supported, the result should be equal to:
+  # orders %>%
+  #   left_join(employees, by = "empl_id") %>%
+  #   left_join(offices, by = "office_id") %>%
+  #   group_by(city) %>%
+  #   summarise(total = sum(total))
+})
+
 test_that("Join fails when data object does not exist", {
   expect_error(
     query("SELECT a FROM a435irawjesz9834are JOIN w3tzldvjsdfkgjwetro USING (b)"),
