@@ -25,10 +25,12 @@ If the \code{data} argument is not specified, then the \code{FROM}
   The names of data frames and columns are case-sensitive (like in R).
   Keywords and function names are not case-sensitive (like in SQL).
 
-  It is possible to use this function together with \pkg{dbplyr} to query
-  remote database tables (\code{tbl_sql} objects), but this depends on which
-  database and which backend package (if any) you are using, so results may
-  vary.
+  In addition to R data frames and tibbles (\code{tbl_df} objects), this
+  function can query \code{dtplyr_step} objects created by \pkg{dtplyr}, a
+  \pkg{data.table} backend for \pkg{dbplyr}. It is also possible to use this
+  function together with \pkg{dbplyr} to query remote database tables
+  (\code{tbl_sql} objects), but this depends on which database and which
+  backend package (if any) you are using, so results may vary.
 
   This function is subject to the
   \href{https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations}{current

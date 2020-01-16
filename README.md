@@ -112,10 +112,14 @@ In the `SELECT` statement, the names of data frames and columns are
 case-sensitive (like in R) and the names of keywords and function names
 are case-insensitive (like in SQL).
 
-It is possible to use `query()` with
-[dbplyr](https://dbplyr.tidyverse.org) to query remote database tables
-(`tbl_sql` objects), but this depends on which database and which
-backend package (if any) you are using, so results may vary.
+In addition to R data frames and tibbles (`tbl_df` objects), `query()`
+can be used to query `dtplyr_step` objects created by
+[dtplyr](https://dtplyr.tidyverse.org), a
+[data.table](http://r-datatable.com/) backend for
+[dbplyr](https://dbplyr.tidyverse.org). It is also possible to use this
+function together with dbplyr to query remote database tables (`tbl_sql`
+objects), but this depends on which database and which backend package
+(if any) you are using, so results may vary.
 
 ## Current Limitations
 
