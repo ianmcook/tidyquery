@@ -52,7 +52,7 @@ test_that("show_dplyr() on SELECT example query #3 returns expected result", {
   )
 })
 
-test_that("show_dplyr() truncates function arguments after the fifth argument ", {
+test_that("show_dplyr() truncates function arguments after the fifth argument", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     str2lang(paste(trimws(capture.output(
