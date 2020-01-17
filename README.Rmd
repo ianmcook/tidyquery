@@ -96,14 +96,14 @@ In addition to R data frames and tibbles (`tbl_df` objects), `query()` can be us
 
 ### Using the `show_dplyr()` Function
 
-**tidyquery** works by generating dplyr code. To print the dplyr code instead of running it, use `show_dplyr()`. 
+**tidyquery** works by generating dplyr code. To print the dplyr code instead of running it, use `show_dplyr()`:
 
 ```{r}
 show_dplyr(
-" SELECT manufacturer AS maker,
+" SELECT manufacturer, 
     COUNT(*) AS num_planes FROM planes
   WHERE engine = 'Turbo-fan'
-  GROUP BY maker;"
+  GROUP BY manufacturer;"
 )
 ```
 

@@ -132,22 +132,20 @@ can be used to query other data frame-like objects, including:
 ### Using the `show_dplyr()` Function
 
 **tidyquery** works by generating dplyr code. To print the dplyr code
-instead of running it, use `show_dplyr()`.
+instead of running it, use `show_dplyr()`:
 
 ``` r
 show_dplyr(
-" SELECT manufacturer AS maker,
+" SELECT manufacturer, 
     COUNT(*) AS num_planes FROM planes
   WHERE engine = 'Turbo-fan'
-  GROUP BY maker;"
+  GROUP BY manufacturer;"
 )
 #> planes %>%
 #>   filter(engine == "Turbo-fan") %>%
 #>   group_by(manufacturer) %>%
-#>   summarise(dplyr::n()) %>%
-#>   ungroup() %>%
-#>   mutate(maker = manufacturer, num_planes = `dplyr::n()`) %>%
-#>   select(maker, num_planes)
+#>   summarise(num_planes = dplyr::n()) %>%
+#>   ungroup()
 ```
 
 ## Current Limitations
