@@ -44,7 +44,7 @@ devtools::install_github("ianmcook/tidyquery")
 
 **tidyquery** exports two functions: `query()` and `show_dplyr()`.
 
-### Using the `query()` Function
+### Using `query()`
 
 To run a SQL query on an R data frame, call the function `query()`,
 passing a `SELECT` statement enclosed in quotes as the first argument.
@@ -115,8 +115,8 @@ planes %>%
 ```
 
 In the `SELECT` statement, the names of data frames and columns are
-case-sensitive (like in R) and the names of keywords and function names
-are case-insensitive (like in SQL).
+case-sensitive (like in R) but keywords and function names are
+case-insensitive (like in SQL).
 
 In addition to R data frames and tibbles (`tbl_df` objects), `query()`
 can be used to query other data frame-like objects, including:
@@ -129,7 +129,7 @@ can be used to query other data frame-like objects, including:
     enabling you to write SQL which is translated to dplyr then
     translated back to SQL and run in a database 🤪
 
-### Using the `show_dplyr()` Function
+### Using `show_dplyr()`
 
 **tidyquery** works by generating dplyr code. To print the dplyr code
 instead of running it, use `show_dplyr()`:
