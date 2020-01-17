@@ -42,9 +42,14 @@ devtools::install_github("ianmcook/tidyquery")
 
 ## Usage
 
-Call the function `query()`, passing a `SELECT` statement enclosed in
-quotes as the first argument. The table names in the `FROM` clause
-should match the names of data frames in your current R session:
+**tidyquery** exports two functions: `query()` and `show_dplyr()`.
+
+### Using the `query()` Function
+
+To run a SQL query on an R data frame, call the function `query()`,
+passing a `SELECT` statement enclosed in quotes as the first argument.
+The table names in the `FROM` clause should match the names of data
+frames in your current R session:
 
 ``` r
 library(tidyquery)
@@ -124,6 +129,27 @@ can be used to query other data frame-like objects, including:
     enabling you to write SQL which is translated to dplyr then
     translated back to SQL and run in a database 🤪
 
+### Using the `show_dplyr()` Function
+
+**tidyquery** works by generating dplyr code. To print the dplyr code
+instead of running it, use `show_dplyr()`.
+
+``` r
+show_dplyr(
+" SELECT manufacturer AS maker,
+    COUNT(*) AS num_planes FROM planes
+  WHERE engine = 'Turbo-fan'
+  GROUP BY maker;"
+)
+#> planes %>%
+#>   filter(engine == "Turbo-fan") %>%
+#>   group_by(manufacturer) %>%
+#>   summarise(dplyr::n()) %>%
+#>   ungroup() %>%
+#>   mutate(maker = manufacturer, num_planes = `dplyr::n()`) %>%
+#>   select(maker, num_planes)
+```
+
 ## Current Limitations
 
 **tidyquery** is subject to the current limitations of the queryparser
@@ -141,3 +167,11 @@ or
     Examples of unsupported join queries include non-equijoin queries
     and outer join queries with qualified references to the join
     column(s).
+
+## Related Work
+
+The **sqldf** package ([CRAN](https://cran.r-project.org/package=sqldf),
+[GitHub](https://github.com/ggrothendieck/sqldf)) runs SQL queries on R
+data frames by transparently setting up a database, loading data from R
+data frames into the database, running SQL queries in the database, and
+returning results as R data frames.
