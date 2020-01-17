@@ -21,6 +21,9 @@
 #' @param sql a character string containing a SQL \code{SELECT} statement
 #' @details For more details, see \code{\link{query}}. Instead of running the
 #'   dplyr code like \code{query} does, \code{show_dplyr} prints the dplyr code.
+#'
+#'   In function calls in the printed code, long lists of arguments may be
+#'   truncated and appended with \code{...}.
 #' @examples
 #' library(dplyr)
 #' library(nycflights13)

@@ -51,3 +51,13 @@ test_that("show_dplyr() on SELECT example query #3 returns expected result", {
             arrange(dplyr::desc(num_planes)))
   )
 })
+
+test_that("show_dplyr() truncates function arguments after the fifth argument ", {
+  skip_if_not(exists("games"), message = "Test data not loaded")
+  expect_equal(
+    str2lang(paste(trimws(capture.output(
+      show_dplyr("SELECT id, name, inventor, year, min_age, min_players, max_players, list_price FROM games")
+    )), collapse = " ")),
+    quote(games %>% select(id, name, inventor, year, min_age, ...))
+  )
+})

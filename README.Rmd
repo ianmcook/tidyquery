@@ -118,6 +118,7 @@ show_dplyr(
 
 - Joins involving three or more tables are not supported.
 - Because joins in dplyr work in a fundamentally different way than joins in SQL, some other types of join queries are not supported. Examples of unsupported join queries include non-equijoin queries and outer join queries with qualified references to the join column(s).
+- In the code printed by `show_dplyr()`, calls to functions with more than five arguments are truncated. All arguments after the fifth are replaced with `...`. This is caused by a limitation of the rlang package.
 
 
 ## Related Work

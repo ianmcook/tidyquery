@@ -168,6 +168,10 @@ or
     Examples of unsupported join queries include non-equijoin queries
     and outer join queries with qualified references to the join
     column(s).
+  - In the code printed by `show_dplyr()`, calls to functions with more
+    than five arguments are truncated. All arguments after the fifth are
+    replaced with `...`. This is caused by a limitation of the rlang
+    package.
 
 ## Related Work
 
