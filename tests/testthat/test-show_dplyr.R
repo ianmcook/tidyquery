@@ -28,3 +28,22 @@ test_that("show_dplyr() on SELECT example query #2 returns expected result", {
       select(maker, num_planes))
   )
 })
+
+test_that("show_dplyr() on SELECT example query #3 returns expected result", {
+  skip_if_not(exists("planes"), message = "Test data not loaded")
+  expect_equal(
+    str2lang(paste(trimws(capture.output(
+      show_dplyr(
+        " SELECT manufacturer,
+            COUNT(*) AS num_planes FROM planes
+          WHERE engine = 'Turbo-fan'
+          GROUP BY manufacturer;"
+      )
+    )), collapse = " ")),
+    quote(planes %>%
+            filter(engine == "Turbo-fan") %>%
+            group_by(manufacturer) %>%
+            summarise(num_planes = dplyr::n()) %>%
+            ungroup())
+  )
+})
