@@ -137,15 +137,18 @@ instead of running it, use `show_dplyr()`:
 ``` r
 show_dplyr(
 " SELECT manufacturer, 
-    COUNT(*) AS num_planes FROM planes
+    COUNT(*) AS num_planes
+  FROM planes
   WHERE engine = 'Turbo-fan'
-  GROUP BY manufacturer;"
+  GROUP BY manufacturer
+  ORDER BY num_planes DESC;"
 )
 #> planes %>%
 #>   filter(engine == "Turbo-fan") %>%
 #>   group_by(manufacturer) %>%
 #>   summarise(num_planes = dplyr::n()) %>%
-#>   ungroup()
+#>   ungroup() %>%
+#>   arrange(dplyr::desc(num_planes))
 ```
 
 ## Current Limitations

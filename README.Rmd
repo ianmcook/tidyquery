@@ -101,9 +101,11 @@ In addition to R data frames and tibbles (`tbl_df` objects), `query()` can be us
 ```{r}
 show_dplyr(
 " SELECT manufacturer, 
-    COUNT(*) AS num_planes FROM planes
+    COUNT(*) AS num_planes
+  FROM planes
   WHERE engine = 'Turbo-fan'
-  GROUP BY manufacturer;"
+  GROUP BY manufacturer
+  ORDER BY num_planes DESC;"
 )
 ```
 
