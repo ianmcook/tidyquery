@@ -439,7 +439,12 @@ verb <- function(input, fun, ...) {
 
 #' @importFrom rlang exprs expr_deparse
 deparse_dots <- function(...) {
-  output <- paste0(trimws(expr_deparse(exprs(...))), collapse = " ")
-  output <- substr(output, 8, nchar(output) - 1)
-  output
+  dots <- exprs(...)
+  if (length(dots) < 1) {
+    ""
+  } else {
+    output <- paste0(trimws(expr_deparse(dots)), collapse = " ")
+    output <- substr(output, 8, nchar(output) - 1)
+    output
+  }
 }
