@@ -1,4 +1,4 @@
-# tidyquery (development version)
+# tidyquery 0.2.0
 
 * Works with the [dtplyr](https://dtplyr.tidyverse.org/) package (a [data.table](http://r-datatable.com/) backend for dplyr) ([#6](https://github.com/ianmcook/tidyquery/issues/6))
 * Accepts two-table joins that use SQL-92-style (explicit) join syntax ([#7](https://github.com/ianmcook/tidyquery/issues/7))
