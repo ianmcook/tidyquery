@@ -182,3 +182,9 @@ The **sqldf** package ([CRAN](https://cran.r-project.org/package=sqldf),
 data frames by transparently setting up a database, loading data from R
 data frames into the database, running SQL queries in the database, and
 returning results as R data frames.
+
+The **[dbplyr](https://dbplyr.tidyverse.org)** package
+([CRAN](https://cran.r-project.org/package=dbplyr),
+[GitHub](https://github.com/tidyverse/dbplyr)) is like tidyquery in
+reverse: it converts dplyr code into SQL, allowing you to use dplyr to
+work with data in a database.
