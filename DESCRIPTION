@@ -23,7 +23,6 @@ Imports:
     utils
 Suggests: 
     covr (>= 3.2.0),
-    disk.frame (>= 0.3.1),
     dbplyr (>= 1.2.1),
     dtplyr (>= 1.0.0),
     nycflights13,
