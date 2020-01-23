@@ -41,6 +41,7 @@ test_that("Full example #1 returns expected result on dtplyr_step", {
 })
 
 test_that("query() fails when input dtplyr_step is grouped", {
+  skip_if_not(exists("flights_dt"), message = "Test data not loaded")
   expect_error(
     flights_dt %>% group_by(month) %>% query("SELECT COUNT(*)"),
     "grouped"
