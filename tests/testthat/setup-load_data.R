@@ -19,7 +19,9 @@ suppressWarnings(tryCatch({
   salary_grades <<- as_tibble(read.table(file = paste0(base_url, "salary_grades.txt"), header = TRUE, sep = "\t", quote = "", stringsAsFactors = FALSE))
   toys          <<- as_tibble(read.table(file = paste0(base_url, "toys.txt"),          header = TRUE, sep = "\t", quote = "", stringsAsFactors = FALSE))
 
-  iris_db       <<- tbl_memdb(iris, name = "iris_db")
+  db_con        <<- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  copy_to(db_con, iris, name = "iris_db")
+  iris_db       <<- tbl(db_con, "iris_db")
 
   iris_dt       <<- lazy_dt(iris)
   flights_dt    <<- lazy_dt(flights)
