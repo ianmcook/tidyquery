@@ -1,3 +1,8 @@
+# tidyquery (development version)
+
+* Minor changes to support dplyr 1.0
+* Minor bugfixes and improvements
+
 # tidyquery 0.2.0
 
 * Works with the [dtplyr](https://dtplyr.tidyverse.org/) package (a [data.table](http://r-datatable.com/) backend for dplyr) ([#6](https://github.com/ianmcook/tidyquery/issues/6))
