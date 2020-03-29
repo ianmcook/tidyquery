@@ -31,8 +31,10 @@ is_supported_data_object <- function(obj) {
 is_grouped_data_object <- function(obj) {
   if (inherits(obj, "tbl_sql") && ("dbplyr" %in% .packages(all.available = TRUE))) {
     length(dbplyr::op_grps(obj)) > 0
+  } else if (inherits(obj, "dtplyr_step")) {
+    length(obj$groups) > 0
   } else {
-    inherits(obj, c("grouped_df", "dtplyr_step_group", "grouped_disk.frame"))
+    inherits(obj, c("grouped_df", "grouped_disk.frame"))
   }
 }
 data_object_uses_function_translations <- function(obj) {
