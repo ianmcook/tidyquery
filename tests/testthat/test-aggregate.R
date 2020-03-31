@@ -339,7 +339,6 @@ test_that("Aggregate example query #27 returns expected result", {
 })
 
 test_that("Aggregate example query #28 returns expected result", {
-  skip("Currently fails because of https://github.com/tidyverse/dplyr/issues/5069")
   skip_if_not(exists("crayons"), message = "Test data not loaded")
   expect_equal(
     query("SELECT COUNT(DISTINCT red, green, blue) FROM crayons; ") %>% pull(1),
