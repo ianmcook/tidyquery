@@ -32,7 +32,7 @@ join <- function(tree) {
   for (i in seq_along(tree$from)) {
 
     data <- tryCatch({
-      eval(tree$from[[i]])
+      get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
     }, error = function(e) {
       NULL
     })
