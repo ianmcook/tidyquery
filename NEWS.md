@@ -1,5 +1,6 @@
 # tidyquery (development version)
 
+* Works when `FROM` clause refers to data frame in non-global environment ([#12](https://github.com/ianmcook/tidyquery/issues/12))
 * Minor changes to support dplyr 1.0
 * Minor bugfixes and improvements
 
