@@ -3,10 +3,10 @@ Type: Package
 Title: Query 'R' Data Frames with 'SQL'
 Version: 0.2.1.9000
 Authors@R: c(
-    person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
+    person("Ian", "Cook", email = "ianmcook@gmail.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
     )
-Maintainer: Ian Cook <ian@cloudera.com>
+Maintainer: Ian Cook <ianmcook@gmail.com>
 Description: Use 'SQL' 'SELECT' statements to query 'R' data frames.
 URL: https://github.com/ianmcook/tidyquery
 BugReports: https://github.com/ianmcook/tidyquery/issues
