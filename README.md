@@ -23,6 +23,11 @@ translate SQL queries into R expressions, then it uses
 return results. **tidyquery** does not load data frames into a database;
 it queries them in place.
 
+For an introduction to **tidyquery** and **queryparser**, watch the
+recording of the talk [“Bridging the Gap between SQL and
+R”](https://www.youtube.com/watch?v=JwP5KdWSgqE) from
+rstudio::conf(2020).
+
 ## Installation
 
 Install the released version of **tidyquery** from

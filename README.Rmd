@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to translate SQL queries into R expressions, then it uses [dplyr](https://dplyr.tidyverse.org) to evaluate these expressions and return results. **tidyquery** does not load data frames into a database; it queries them in place.
 
+For an introduction to **tidyquery** and **queryparser**, watch the recording of the talk ["Bridging the Gap between SQL and R"](https://www.youtube.com/watch?v=JwP5KdWSgqE) from rstudio::conf(2020).
+
 ## Installation
 
 Install the released version of **tidyquery** from [CRAN](https://CRAN.R-project.org/package=tidyquery) with:
