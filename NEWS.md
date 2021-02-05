@@ -1,4 +1,4 @@
-# tidyquery (development version)
+# tidyquery 0.2.2
 
 * Improves stability with dtplyr and data.table ([#17](https://github.com/ianmcook/tidyquery/issues/17))
 * Requires queryparser 0.3.1 or higher

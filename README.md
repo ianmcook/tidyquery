@@ -3,18 +3,6 @@
 
 # tidyquery <img src="man/figures/logo.png" align="right" width="120" />
 
-<!-- badges: start -->
-
-[![CRAN
-status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
-[![Travis build
-status](https://travis-ci.org/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.org/ianmcook/tidyquery)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
-[![Codecov test
-coverage](https://codecov.io/gh/ianmcook/tidyquery/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/tidyquery?branch=master)
-<!-- badges: end -->
-
 **tidyquery** runs SQL queries on R data frames.
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to
@@ -126,10 +114,10 @@ case-insensitive (like in SQL).
 In addition to R data frames and tibbles (`tbl_df` objects), `query()`
 can be used to query other data frame-like objects, including:
 
-  - `dtplyr_step` objects created with
+-   `dtplyr_step` objects created with
     [dtplyr](https://dtplyr.tidyverse.org), a
     [data.table](http://r-datatable.com/) backend for dplyr
-  - `tbl_sql` objects created with
+-   `tbl_sql` objects created with
     [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package,
     enabling you to write SQL which is translated to dplyr then
     translated back to SQL and run in a database 🤪
@@ -167,14 +155,14 @@ or
 
 **tidyquery** also has the following additional limitations:
 
-  - Joins involving three or more tables are not supported.
-  - Because joins in dplyr currently work in a fundamentally different
+-   Joins involving three or more tables are not supported.
+-   Because joins in dplyr currently work in a fundamentally different
     way than joins in SQL, some other types of join queries are not
     supported. Examples of unsupported join queries include non-equijoin
     queries and outer join queries with qualified references to the join
     column(s). Planned changes in dplyr will enable future versions of
     tidyquery to support more types of joins.
-  - In the code printed by `show_dplyr()`, calls to functions with more
+-   In the code printed by `show_dplyr()`, calls to functions with more
     than five arguments might be truncated, with arguments after the
     fifth replaced with `...`. This is caused by a current limitation of
     the rlang package that is expected to be resolved in a future
