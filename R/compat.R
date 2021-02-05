@@ -47,3 +47,7 @@ column_names <- function(obj) {
     colnames(obj)
   }
 }
+
+# Temporary fix for https://github.com/tidyverse/dtplyr/issues/184
+#' @export
+.datatable.aware <- TRUE
