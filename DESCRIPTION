@@ -13,7 +13,7 @@ BugReports: https://github.com/ianmcook/tidyquery/issues
 NeedsCompilation: no
 License: Apache License 2.0
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Imports: 
     dplyr (>= 0.7.4),
     lubridate (>= 1.6.0),
@@ -38,3 +38,4 @@ Collate:
     'replace.R'
     'show_dplyr.R'
     'unscope.R'
+Config/testthat/edition: 3
