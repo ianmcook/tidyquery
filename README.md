@@ -29,8 +29,8 @@ Or install the development version from
 [GitHub](https://github.com/ianmcook/tidyquery) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ianmcook/tidyquery")
+# install.packages("remotes")
+remotes::install_github("ianmcook/tidyquery")
 ```
 
 ## Usage
