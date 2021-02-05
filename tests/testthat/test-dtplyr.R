@@ -1,11 +1,14 @@
 test_that("Simple SELECT example query #1 returns expected result on dtplyr_step", {
   skip_if_not(exists("iris_dt"), message = "Test data not loaded")
   expect_equal(
-    query("SELECT Species, COUNT(*) AS n FROM iris_dt GROUP BY Species"),
+    query(
+      "SELECT Species, COUNT(*) AS n FROM iris_dt GROUP BY Species"
+    ) %>% as.data.frame(),
     iris_dt %>%
       group_by(Species) %>%
       summarise(n = n()) %>%
-      ungroup()
+      ungroup() %>%
+      as.data.frame()
   )
 })
 
@@ -24,7 +27,7 @@ test_that("Full example #1 returns expected result on dtplyr_step", {
         HAVING num_flts > 3000
         ORDER BY num_flts DESC, avg_delay DESC
         LIMIT 100;"
-    ),
+    ) %>% as.data.frame(),
     flights_dt %>%
       filter(between(distance,200,300) & !is.na(air_time)) %>%
       group_by(origin, dest) %>%
@@ -36,7 +39,8 @@ test_that("Full example #1 returns expected result on dtplyr_step", {
       ) %>%
       ungroup() %>%
       arrange(desc(num_flts), desc(avg_delay)) %>%
-      head(100L)
+      head(100L) %>%
+      as.data.frame()
   )
 })
 
