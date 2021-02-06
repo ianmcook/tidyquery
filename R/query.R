@@ -120,6 +120,7 @@ query_ <- function(data, sql, query = TRUE) {
 
 
   ### from clause ###
+
   if (is.null(tree$from)) {
     if (!is_supported_data_object(data)) {
       stop("When calling ", fun_name, "(), you must specify which data frame to query ",
@@ -132,7 +133,9 @@ query_ <- function(data, sql, query = TRUE) {
     out$data <- data
     rm(data)
     out$code <- paste0("<", class(data)[1], ">")
+
   } else {
+
     if (is_supported_data_object(data)) {
       stop("When calling ", fun_name, "(), specify which data frame to query ",
         "using either the first argument or the FROM clause, not both",
@@ -153,7 +156,9 @@ query_ <- function(data, sql, query = TRUE) {
       }
       table_prefixes <- c(table_names, table_aliases)
       tree <- unqualify_query(tree, prefixes = table_prefixes, except = column_names(out$data))
+
     }
+
   }
 
   if (is_grouped_data_object(out$data)) {
@@ -216,20 +221,25 @@ query_ <- function(data, sql, query = TRUE) {
     # SQL engines typically do not allow column aliases in the WHERE clause
     # so replace_aliases_with_values() is not called here
     out <- out %>% verb(filter, !!(tree$where[[1]]))
+
   }
 
 
   ### group by clause ###
   if (!is.null(tree$group_by)) {
+
     tree$group_by <- replace_aliases_with_values(tree$group_by, alias_names, alias_values)
     out <- out %>% verb(group_by, !!!(tree$group_by))
+
   }
 
 
   ### having clause ###
   if (!is.null(tree$having)) {
+
     tree$having <- replace_aliases_with_values(tree$having, alias_names, alias_values)
     out <- out %>% verb(filter, !!(tree$having[[1]]))
+
   }
 
 
@@ -248,6 +258,7 @@ query_ <- function(data, sql, query = TRUE) {
     any(remove_desc_from_expressions(tree$order_by) %in% aliased_exprs) || any(tree$group_by %in% aliased_exprs)
 
   if (isTRUE(attr(tree, "aggregate"))) {
+
     if (any(!c(tree$group_by, remove_desc_from_expressions(tree$order_by)) %in%
       replace_empty_names_with_values(names(tree$select), unname(tree$select)))) {
       use_quoted_deparsed_expressions <- TRUE
@@ -273,7 +284,9 @@ query_ <- function(data, sql, query = TRUE) {
     }
 
     transmute_early <- FALSE
+
   } else if (isTRUE(attr(tree$select, "distinct"))) {
+
     if (any(!remove_desc_from_expressions(tree$order_by) %in%
       replace_empty_names_with_values(names(tree$select), unname(tree$select)))) {
       use_quoted_deparsed_expressions <- TRUE
@@ -286,6 +299,7 @@ query_ <- function(data, sql, query = TRUE) {
     }
 
     transmute_early <- FALSE
+
   } else {
 
     # if the ORDER BY clause refers only to aliases and unalised expressions that exist in the SELECT list,
@@ -309,6 +323,7 @@ query_ <- function(data, sql, query = TRUE) {
     } else {
       out <- out %>% verb(mutate, !!!(tree$select))
     }
+
   }
 
   cols_after <- column_names(out$data)
@@ -319,15 +334,21 @@ query_ <- function(data, sql, query = TRUE) {
   )
 
   if (!identical(new_select_exprs, unaliased_select_exprs)) {
+
     if (length(new_select_exprs) < length(unaliased_select_exprs)) {
+
       stop("The SELECT list includes two or more long expressions with no aliases assigned ",
         "to them. You must assign aliases to these expressions",
         call. = FALSE
       )
+
     } else if (length(new_select_exprs) == length(unaliased_select_exprs)) {
+
       final_select_list[as.character(final_select_list) %in% unaliased_select_exprs] <-
         lapply(new_select_exprs, as.name)
+
     }
+
   }
 
   if (use_quoted_deparsed_expressions) {
@@ -351,6 +372,7 @@ query_ <- function(data, sql, query = TRUE) {
 
   ### order by clause ###
   if (!is.null(tree$order_by)) {
+
     if (isTRUE(attr(tree, "aggregate")) || isTRUE(attr(tree$select, "distinct"))) {
       tree$order_by <- quote_columns_in_expressions(
         tree$order_by,
@@ -361,11 +383,13 @@ query_ <- function(data, sql, query = TRUE) {
       )
     }
     out <- out %>% verb(arrange, !!!(tree$order_by))
+
   }
 
 
   ### select clause stage 3 ###
   if (isTRUE(attr(tree, "aggregate"))) {
+
     if (is.null(names(final_select_list))) {
       cols_to_return <- quote_full_expressions(final_select_list)
     } else {
@@ -376,6 +400,7 @@ query_ <- function(data, sql, query = TRUE) {
     if (length(cols_to_return) > 0 && length(cols_to_return) < ncol(out$data)) {
       out <- out %>% verb(select, !!!cols_to_return)
     }
+
   } else {
 
     if (use_quoted_deparsed_expressions) {
@@ -405,10 +430,12 @@ query_ <- function(data, sql, query = TRUE) {
 
   ### limit clause ###
   if (!is.null(tree$limit)) {
+
     out <- list(
       code = paste0(out$code, " %>%\n  head(", tree$limit[[1]], ")"),
       data = out$data %>% head(tree$limit[[1]])
     )
+
   }
 
   if (query) {
