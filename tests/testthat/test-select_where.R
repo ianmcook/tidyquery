@@ -10,7 +10,7 @@ test_that("SELECT with WHERE example query #2 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     query("SELECT name FROM games WHERE inventor = 'Elizabeth Magie';"),
-    games %>% filter(inventor == 'Elizabeth Magie') %>% select(name)
+    games %>% filter(inventor == "Elizabeth Magie") %>% select(name)
   )
 })
 

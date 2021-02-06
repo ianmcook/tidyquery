@@ -26,7 +26,7 @@ test_that("SELECT DISTINCT example query #4 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     query("SELECT DISTINCT concat(substring(year, 1, 3), '0s') FROM games") %>% pull(1),
-    games %>% distinct(decade = paste0(substring(year, 1, 3), '0s')) %>% pull(1)
+    games %>% distinct(decade = paste0(substring(year, 1, 3), "0s")) %>% pull(1)
   )
 })
 
@@ -34,6 +34,6 @@ test_that("SELECT DISTINCT example query #5 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     query("SELECT DISTINCT concat(substring(year, 1, 3), '0s') AS decade FROM games"),
-    games %>% distinct(decade = paste0(substring(year, 1, 3), '0s'))
+    games %>% distinct(decade = paste0(substring(year, 1, 3), "0s"))
   )
 })

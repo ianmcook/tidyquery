@@ -16,7 +16,7 @@
 NULL
 
 quote_column_in_expression <- function(expr, column) {
-  if (deparse(expr) == column)  {
+  if (deparse(expr) == column) {
     expr <- as.symbol(deparse(expr))
   }
   if (length(expr) == 1) {
