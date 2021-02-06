@@ -377,9 +377,13 @@ query_ <- function(data, sql, query = TRUE) {
       out <- out %>% verb(select, !!!cols_to_return)
     }
   } else {
+
     if (use_quoted_deparsed_expressions) {
+
       out <- out %>% verb(transmute, !!!(quote_full_expressions(final_select_list)))
+
     } else if (!transmute_early) {
+
       if (is.null(names(final_select_list))) {
         cols_to_return <- quote_full_expressions(final_select_list)
       } else {
@@ -393,7 +397,9 @@ query_ <- function(data, sql, query = TRUE) {
       if (length(cols_to_return) > 0 && length(cols_to_return) < ncol(out$data)) {
         out <- out %>% verb(select, !!!cols_to_return)
       }
+
     }
+
   }
 
 
