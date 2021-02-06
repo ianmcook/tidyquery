@@ -1,7 +1,7 @@
 Package: tidyquery
 Type: Package
 Title: Query 'R' Data Frames with 'SQL'
-Version: 0.2.2
+Version: 0.2.2.9000
 Authors@R: c(
     person("Ian", "Cook", email = "ianmcook@gmail.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
