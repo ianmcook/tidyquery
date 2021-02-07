@@ -19,6 +19,7 @@ NULL
 #' @importFrom dplyr rename
 #' @importFrom queryparser column_references
 join <- function(tree) {
+
   out <- list()
 
   join_types <- attr(tree$from, "join_types")
@@ -29,6 +30,7 @@ join <- function(tree) {
   }
 
   for (i in seq_along(tree$from)) {
+
     data <- tryCatch(
       {
         get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
@@ -69,9 +71,12 @@ join <- function(tree) {
     }
 
     if (i == 1) {
+
       out$data <- data
       out$code <- code
+
     } else {
+
       left_table_ref <- tree$from[i - 1]
       right_table_ref <- tree$from[i]
       all_table_refs <- c(
@@ -230,7 +235,9 @@ join <- function(tree) {
           call. = FALSE
         )
       }
+
     }
+
   }
   out
 }
