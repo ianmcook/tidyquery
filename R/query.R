@@ -120,7 +120,6 @@ query_ <- function(data, sql, query = TRUE) {
 
 
   ### from clause ###
-
   if (is.null(tree$from)) {
     if (!is_supported_data_object(data)) {
       stop("When calling ", fun_name, "(), you must specify which data frame to query ",
