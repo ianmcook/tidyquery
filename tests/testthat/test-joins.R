@@ -77,7 +77,7 @@ test_that("Inner join example query #7 returns expected result", {
              FROM flights f JOIN airlines a USING (carrier)"),
     flights %>%
       inner_join(airlines, by = "carrier") %>%
-      transmute(stringr::str_c('Now boarding', name, 'flight', as.character(flight), sep = " "))
+      transmute(stringr::str_c("Now boarding", name, "flight", as.character(flight), sep = " "))
   )
 })
 
@@ -88,7 +88,7 @@ test_that("Inner join example query #8 returns expected result", {
              FROM flights f JOIN airlines a USING (carrier)"),
     flights %>%
       inner_join(airlines, by = "carrier") %>%
-      transmute(stringr::str_c('Now boarding', name, 'flight', as.character(flight), sep = " "))
+      transmute(stringr::str_c("Now boarding", name, "flight", as.character(flight), sep = " "))
   )
 })
 
@@ -99,7 +99,7 @@ test_that("Inner join example query #9 returns expected result", {
              FROM flights f JOIN airlines a USING (carrier)"),
     flights %>%
       inner_join(airlines, by = "carrier") %>%
-      transmute(stringr::str_c('Now boarding', name, 'flight', as.character(flight), sep = " "))
+      transmute(stringr::str_c("Now boarding", name, "flight", as.character(flight), sep = " "))
   )
 })
 
@@ -110,7 +110,7 @@ test_that("Inner join example query #10 returns expected result", {
              FROM flights f JOIN airlines a USING (carrier)"),
     flights %>%
       inner_join(airlines, by = "carrier") %>%
-      transmute(stringr::str_c('Now boarding', name, 'flight', as.character(flight), sep = " "))
+      transmute(stringr::str_c("Now boarding", name, "flight", as.character(flight), sep = " "))
   )
 })
 
@@ -817,8 +817,8 @@ test_that("Join fails when data object has unsupported type", {
 test_that("Inner join does not match NAs", {
   expect_equal(
     {
-      join_test_na_match_data_x <<- data.frame(k1 = c(NA,NA,3,4,5), k2 = c(1,NA,NA,4,5), data = 1:5)
-      join_test_na_match_data_y <<- data.frame(k1 = c(NA,2,NA,4,5), k2 = c(NA,NA,3,4,5), data = 1:5)
+      join_test_na_match_data_x <<- data.frame(k1 = c(NA, NA, 3, 4, 5), k2 = c(1, NA, NA, 4, 5), data = 1:5)
+      join_test_na_match_data_y <<- data.frame(k1 = c(NA, 2, NA, 4, 5), k2 = c(NA, NA, 3, 4, 5), data = 1:5)
       query("select COUNT(*) FROM join_test_na_match_data_x JOIN join_test_na_match_data_y USING (k1)") %>% pull(1)
     },
     2L

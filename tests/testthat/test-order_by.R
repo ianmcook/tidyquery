@@ -77,7 +77,7 @@ test_that("ORDER BY clause example query #8 returns expected result", {
     crayons %>%
       arrange(
         desc((pmax(red, green, blue) - pmin(red, green, blue)) /
-               pmin(red, green, blue))
+          pmin(red, green, blue))
       )
   )
 })
@@ -115,7 +115,7 @@ test_that("ORDER BY clause example query #10 returns expected result", {
     crayons %>%
       mutate(
         saturation = (pmax(red, green, blue) - pmin(red, green, blue)) /
-               pmax(red, green, blue)
+          pmax(red, green, blue)
       ) %>%
       arrange(desc(saturation))
   )

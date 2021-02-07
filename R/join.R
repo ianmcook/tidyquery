@@ -31,11 +31,14 @@ join <- function(tree) {
 
   for (i in seq_along(tree$from)) {
 
-    data <- tryCatch({
-      get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
-    }, error = function(e) {
-      NULL
-    })
+    data <- tryCatch(
+      {
+        get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
+      },
+      error = function(e) {
+        NULL
+      }
+    )
     code <- tree$from[[i]]
 
     if (is.null(data)) {
@@ -62,7 +65,9 @@ join <- function(tree) {
     misqualified_column_refs <- !(qualified_column_names %in% column_names(data))
     if (any(misqualified_column_refs)) {
       stop("Query contains misqualified column reference(s): ",
-           paste0(qualified_column_refs[misqualified_column_refs], collapse = ", "), call. = FALSE)
+        paste0(qualified_column_refs[misqualified_column_refs], collapse = ", "),
+        call. = FALSE
+      )
     }
 
     if (i == 1) {
@@ -96,15 +101,17 @@ join <- function(tree) {
         )
       )
 
-      left_table_suffix = replace_empty_name_with_value(names(left_table_ref), as.character(left_table_ref))
-      right_table_suffix = replace_empty_name_with_value(names(right_table_ref), as.character(right_table_ref))
+      left_table_suffix <- replace_empty_name_with_value(names(left_table_ref), as.character(left_table_ref))
+      right_table_suffix <- replace_empty_name_with_value(names(right_table_ref), as.character(right_table_ref))
 
       # check for column names that would make it impossible to identify the non-joined duplicate variables
       # based on their suffixes after the join
       if (any(ends_with_suffix(c(left_table_columns, right_table_columns), left_table_suffix)) ||
-          any(ends_with_suffix(c(left_table_columns, right_table_columns), right_table_suffix))) {
+        any(ends_with_suffix(c(left_table_columns, right_table_columns), right_table_suffix))) {
         stop("Names of columns in data must not end with .", left_table_suffix,
-             " or .", right_table_suffix, call. = FALSE)
+          " or .", right_table_suffix,
+          call. = FALSE
+        )
       }
 
       # check for qualified references to join key column(s) from the left or right table that are not returned
@@ -135,21 +142,29 @@ join <- function(tree) {
       if (join_type %in% left_outer_join_types) {
         if (any(bad_right_table_columns)) {
           stop("In left outer joins, dplyr returns only the join key column(s) from the left table. ",
-               "The following qualified references to join key column(s) from the right table are unsupported: ",
-               paste0(right_table_join_columns[bad_right_table_columns], collapse = ", "), call. = FALSE)
+            "The following qualified references to join key column(s) from the right table are unsupported: ",
+            paste0(right_table_join_columns[bad_right_table_columns], collapse = ", "),
+            call. = FALSE
+          )
         }
       } else if (join_type %in% right_outer_join_types) {
         if (any(bad_left_table_columns)) {
           stop("In right outer joins, dplyr returns only the join key column(s) from the right table. ",
-               "The following qualified references to join key column(s) from the left table are unsupported: ",
-               paste0(left_table_join_columns[bad_left_table_columns], collapse = ", "), call. = FALSE)
+            "The following qualified references to join key column(s) from the left table are unsupported: ",
+            paste0(left_table_join_columns[bad_left_table_columns], collapse = ", "),
+            call. = FALSE
+          )
         }
       } else if (join_type %in% full_outer_join_types) {
         if (any(bad_left_table_columns) || any(bad_right_table_columns)) {
           stop("In full outer joins, dplyr coalesces the join key column(s) from the right and left tables. ",
-               "The following qualified references to join key column(s) are unsupported: ",
-               paste0(c(left_table_join_columns[bad_left_table_columns],
-                 right_table_join_columns[bad_right_table_columns]), collapse = ", "), call. = FALSE)
+            "The following qualified references to join key column(s) are unsupported: ",
+            paste0(c(
+              left_table_join_columns[bad_left_table_columns],
+              right_table_join_columns[bad_right_table_columns]
+            ), collapse = ", "),
+            call. = FALSE
+          )
         }
       }
 
@@ -216,7 +231,9 @@ join <- function(tree) {
         (column_refs %in% column_names(data)) & !(column_refs %in% column_names(out$data))
       if (any(ambiguous_column_refs)) {
         stop("Query contains ambiguous column reference(s): ",
-             paste0(column_refs[ambiguous_column_refs], collapse = ", "), call. = FALSE)
+          paste0(column_refs[ambiguous_column_refs], collapse = ", "),
+          call. = FALSE
+        )
       }
 
     }
@@ -243,10 +260,10 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
       if (identical(column_1_ref, column_2_ref)) {
         if (column_1_ref %in% left_table_columns && column_1_ref %in% right_table_columns) {
           if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref)))) &&
-              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))))) {
+            (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))))) {
             return(as.character(column_1_ref))
           } else if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref)))) &&
-              (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))))) {
+            (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))))) {
             return(as.character(column_1_ref))
           } else {
             stop("Invalid join conditions", call. = FALSE)

@@ -18,7 +18,7 @@ test_that("show_dplyr() on SELECT example query #2 returns expected result", {
           FROM planes
           WHERE engine = 'Turbo-fan'
           GROUP BY maker;"
-        )
+      )
     )), collapse = " ")),
     quote(planes %>%
       filter(engine == "Turbo-fan") %>%
@@ -44,11 +44,11 @@ test_that("show_dplyr() on SELECT example query #3 returns expected result", {
       )
     )), collapse = " ")),
     quote(planes %>%
-            filter(engine == "Turbo-fan") %>%
-            group_by(manufacturer) %>%
-            summarise(num_planes = dplyr::n()) %>%
-            ungroup() %>%
-            arrange(dplyr::desc(num_planes)))
+      filter(engine == "Turbo-fan") %>%
+      group_by(manufacturer) %>%
+      summarise(num_planes = dplyr::n()) %>%
+      ungroup() %>%
+      arrange(dplyr::desc(num_planes)))
   )
 })
 
@@ -56,7 +56,7 @@ test_that("show_dplyr() truncates function arguments after the fifth argument wi
   skip_if_not(exists("games"), message = "Test data not loaded")
   # uncomment this line after a version of rlang with
   # https://github.com/r-lib/rlang/pull/897 merged is on CRAN
-  #skip_if("max_elements" %in% names(formals(rlang::expr_deparse)))
+  # skip_if("max_elements" %in% names(formals(rlang::expr_deparse)))
   expect_equal(
     str2lang(paste(trimws(capture.output(
       show_dplyr("SELECT id, name, inventor, year, min_age, min_players, max_players, list_price FROM games")

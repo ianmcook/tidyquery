@@ -16,14 +16,14 @@
 NULL
 
 remove_desc_from_expression <- function(expr) {
-    if (is.call(expr) && deparse(expr[[1]]) %in% c("dplyr::desc", "desc")) {
-      expr <- expr[[2]]
-    }
-    if (length(expr) == 1) {
-      return(expr)
-    } else {
-      return(as.call(lapply(expr, remove_desc_from_expression)))
-    }
+  if (is.call(expr) && deparse(expr[[1]]) %in% c("dplyr::desc", "desc")) {
+    expr <- expr[[2]]
+  }
+  if (length(expr) == 1) {
+    return(expr)
+  } else {
+    return(as.call(lapply(expr, remove_desc_from_expression)))
+  }
 }
 
 remove_desc_from_expressions <- function(exprs) {

@@ -74,7 +74,7 @@ test_that("Simple SELECT example query #9 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat(name, ' is for players age ', min_age, ' or older') FROM games;") %>% pull(1),
-    games %>% transmute(paste0(name, ' is for players age ', min_age, ' or older')) %>% pull(1)
+    games %>% transmute(paste0(name, " is for players age ", min_age, " or older")) %>% pull(1)
   )
 })
 
@@ -82,7 +82,7 @@ test_that("Simple SELECT example query #10 returns expected result", {
   skip_if_not(exists("games"), message = "Test data not loaded")
   expect_equal(
     query("SELECT concat(name, ' is for players age ', cast(min_age AS STRING), ' or older') FROM games;") %>% pull(1),
-    games %>% transmute(paste0(name, ' is for players age ', as.character(min_age), ' or older')) %>% pull(1)
+    games %>% transmute(paste0(name, " is for players age ", as.character(min_age), " or older")) %>% pull(1)
   )
 })
 
@@ -93,9 +93,11 @@ test_that("Simple SELECT example query #11 returns expected result", {
               year AS year_game_invented, min_age AS youngest_player,
               min_players AS fewest_players, max_players AS most_players
             FROM games;"),
-    games %>% transmute(name_of_game = name, inventor_of_game = inventor,
-                        year_game_invented = year, youngest_player = min_age,
-                        fewest_players = min_players, most_players = max_players)
+    games %>% transmute(
+      name_of_game = name, inventor_of_game = inventor,
+      year_game_invented = year, youngest_player = min_age,
+      fewest_players = min_players, most_players = max_players
+    )
   )
 })
 

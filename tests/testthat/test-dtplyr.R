@@ -29,7 +29,7 @@ test_that("Full example #1 returns expected result on dtplyr_step", {
         LIMIT 100;"
     ) %>% as.data.frame(),
     flights_dt %>%
-      filter(between(distance,200,300) & !is.na(air_time)) %>%
+      filter(between(distance, 200, 300) & !is.na(air_time)) %>%
       group_by(origin, dest) %>%
       filter(sum(!is.na(flight)) > 3000) %>%
       summarise(

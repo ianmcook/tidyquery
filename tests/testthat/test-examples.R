@@ -15,7 +15,7 @@ test_that("Full example #1 returns expected result", {
         LIMIT 100;"
     ),
     flights %>%
-      filter(between(distance,200,300) & !is.na(air_time)) %>%
+      filter(between(distance, 200, 300) & !is.na(air_time)) %>%
       group_by(origin, dest) %>%
       filter(sum(!is.na(flight)) > 3000) %>%
       summarise(
@@ -110,10 +110,14 @@ test_that("Full example #5 returns expected result", {
 test_that("Full example #6 returns expected result", {
   skip_if(packageVersion("queryparser") < "0.1.1.9002", message = "Test requires queryparser 0.1.1.9002 or higher")
   skip_if_not(exists("offices"), message = "Test data not loaded")
-  patterns <- eval(str2lang(paste0("list(",
+  patterns <- eval(str2lang(paste0(
+    "list(",
     paste0("expr(state_province == '", state.name[state.name %in% offices$state_province], "' ~ '",
-           state.abb[state.name %in% offices$state_province], "'", collapse = ", "),
-    "))")))
+      state.abb[state.name %in% offices$state_province], "'",
+      collapse = ", "
+    ),
+    "))"
+  )))
   expect_equal(
     query(
       "SELECT upper(city) AS city,
