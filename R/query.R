@@ -363,7 +363,7 @@ query_ <- function(data, sql, query = TRUE) {
       final_select_list[names(missing_exprs)] <-
         lapply(names(final_select_list[names(missing_exprs)]), as.name)
     }
- 
+
     if (length(aliases) > 0) {
       out <- out %>% verb(mutate, !!!aliases)
     }
