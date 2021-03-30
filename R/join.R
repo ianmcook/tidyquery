@@ -31,21 +31,34 @@ join <- function(tree) {
 
   for (i in seq_along(tree$from)) {
 
-    data <- tryCatch(
-      {
-        get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
-      },
-      error = function(e) {
-        NULL
-      }
-    )
-    code <- tree$from[[i]]
+    if (identical(typeof(tree$from[[i]]), "language") &&
+        identical(tree$from[[i]][[1]], quote(`::`)) &&
+        length(tree$from[[i]]) == 3) {
+      data <- tryCatch(
+        {
+          getExportedValue(ns = deparse(tree$from[[i]][[2]]), name = deparse(tree$from[[i]][[3]]))
+        },
+        error = function(e) {
+          NULL
+        }
+      )
+    } else {
+      data <- tryCatch(
+        {
+          get(x = deparse(tree$from[[i]]), envir = parent.frame(n = 3))
+        },
+        error = function(e) {
+          NULL
+        }
+      )
+    }
+    code <- deparse(tree$from[[i]])
 
     if (is.null(data)) {
-      stop("No data frame exists with the name ", tree$from[[i]], call. = FALSE)
+      stop("No data frame exists with the name ", deparse(tree$from[[i]]), call. = FALSE)
     }
     if (!is_supported_data_object(data)) {
-      stop("The object with the name ", tree$from[[i]], " is not a supported data object", call. = FALSE)
+      stop("The object with the name ", deparse(tree$from[[i]]), " is not a supported data object", call. = FALSE)
     }
 
     column_refs <- column_references(tree, from = FALSE)

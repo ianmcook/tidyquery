@@ -1,6 +1,7 @@
 # tidyquery (development version)
 
 * `show_dplyr()` does not truncate arguments if using rlang version higher than 0.4.10 ([#21](https://github.com/ianmcook/tidyquery/issues/21))
+* Accepts names in form `namespace::object` in `FROM` clause ([#22](https://github.com/ianmcook/tidyquery/issues/22))
 
 # tidyquery 0.2.2
 
