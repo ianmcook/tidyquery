@@ -1,3 +1,7 @@
+# tidyquery (development version)
+
+* `show_dplyr()` does not truncate arguments if using rlang version higher than 0.4.10 ([#21](https://github.com/ianmcook/tidyquery/issues/21))
+
 # tidyquery 0.2.2
 
 * Improves stability with dtplyr and data.table ([#17](https://github.com/ianmcook/tidyquery/issues/17))

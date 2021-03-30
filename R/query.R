@@ -463,13 +463,11 @@ deparse_dots <- function(...) {
   if (length(dots) < 1) {
     ""
   } else {
-    # uncomment these lines after a version of rlang with
-    # https://github.com/r-lib/rlang/pull/897 merged is on CRAN
-    # if ("max_elements" %in% names(formals(expr_deparse))) {
-    #  output <- expr_deparse(dots, max_elements = NULL)
-    # } else {
-    output <- expr_deparse(dots)
-    # }
+    if ("max_elements" %in% names(formals(expr_deparse))) {
+      output <- expr_deparse(dots, max_elements = NULL)
+    } else {
+      output <- expr_deparse(dots)
+    }
     output <- paste0(trimws(output), collapse = " ")
     output <- substr(output, 8, nchar(output) - 1)
     output
