@@ -174,11 +174,6 @@ or
     queries and outer join queries with qualified references to the join
     column(s). Planned changes in dplyr will enable future versions of
     tidyquery to support more types of joins.
--   In the code printed by `show_dplyr()`, calls to functions with more
-    than five arguments might be truncated, with arguments after the
-    fifth replaced with `...`. This is caused by a current limitation of
-    the rlang package that is expected to be resolved in a future
-    version.
 
 ## Related Work
 

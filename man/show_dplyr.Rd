@@ -20,7 +20,8 @@ For more details, see \code{\link{query}}. Instead of running the
   dplyr code like \code{query} does, \code{show_dplyr} prints the dplyr code.
 
   In function calls in the printed code, long lists of arguments may be
-  truncated and appended with \code{...}.
+  truncated and appended with \code{...} if you have an older version of the
+  rlang package installed. To fix this, update to a newer version of rlang.
 }
 \examples{
 library(dplyr)
