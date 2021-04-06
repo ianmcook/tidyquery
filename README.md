@@ -185,7 +185,7 @@ returning results as R data frames.
 
 The **duckdb** package
 ([CRAN](https://cran.r-project.org/package=duckdb),
-[GitHub](https://github.com/cwida/duckdb/tree/master/tools/rpkg))
+[GitHub](https://github.com/duckdb/duckdb/tree/master/tools/rpkg))
 includes the function `duckdb_register()` which registers an R data
 frame as a virtual table in a [DuckDB](https://duckdb.org) database,
 enabling you to run SQL queries on the data frame with
