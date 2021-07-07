@@ -196,3 +196,10 @@ The **[dbplyr](https://dbplyr.tidyverse.org)** package
 [GitHub](https://github.com/tidyverse/dbplyr)) is like tidyquery in
 reverse: it converts dplyr code into SQL, allowing you to use dplyr to
 work with data in a database.
+
+In **Python**, the
+**[dataframe_sql](https://github.com/zbrookle/dataframe_sql)**
+package (targeting **[pandas](https://pandas.pydata.org)**) and the
+**[sql_to_ibis](https://github.com/zbrookle/sql_to_ibis)** package
+(targeting **[Ibis](https://ibis-project.org)**) are analogous to
+tidyquery.
