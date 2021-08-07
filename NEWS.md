@@ -1,6 +1,7 @@
 # tidyquery (development version)
 
 * Accepts names in form `namespace::object` in `FROM` clause ([#22](https://github.com/ianmcook/tidyquery/issues/22))
+* Exports its version number ([#23](https://github.com/ianmcook/tidyquery/issues/23))
 
 # tidyquery 0.2.2
 
