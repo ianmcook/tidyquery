@@ -51,3 +51,7 @@ column_names <- function(obj) {
 # Temporary fix for https://github.com/tidyverse/dtplyr/issues/184
 #' @export
 .datatable.aware <- TRUE
+
+# Export version number for use by queryparser
+#' @export
+.tidyquery.version <- packageVersion("tidyquery")

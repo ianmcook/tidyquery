@@ -32,7 +32,7 @@ Suggests:
     testthat (>= 3.0.0)
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.1.9001
 Collate: 
     'compat.R'
     'query.R'
