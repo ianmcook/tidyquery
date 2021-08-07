@@ -8,7 +8,7 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
 [![Travis build
-status](https://travis-ci.org/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.org/ianmcook/tidyquery)
+status](https://travis-ci.com/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.com/ianmcook/tidyquery)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
 [![Codecov test
