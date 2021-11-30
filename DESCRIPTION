@@ -43,3 +43,6 @@ Collate:
     'show_dplyr.R'
     'unscope.R'
 Config/testthat/edition: 3
+Remotes:
+  tidyverse/dtplyr,
+  tidyverse/tidyr

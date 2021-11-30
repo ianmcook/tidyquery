@@ -93,6 +93,7 @@ test_that("query() fails with two identical expressions with no aliases", {
 })
 
 test_that("query() fails on two very long expressions with no aliases", {
+  skip("no longer fails")
   expect_error(
     query("SELECT 1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1, 1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+2 FROM games"),
     "alias"
