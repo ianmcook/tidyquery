@@ -52,24 +52,12 @@ test_that("show_dplyr() on SELECT example query #3 returns expected result", {
   )
 })
 
-test_that("show_dplyr() truncates function arguments after the fifth argument with older versions of rlang", {
+test_that("show_dplyr() truncates function arguments after the fifth argument", {
   skip_if_not(exists("games"), message = "Test data not loaded")
-  skip_if("max_elements" %in% names(formals(rlang::expr_deparse)))
   expect_equal(
     str2lang(paste(trimws(capture.output(
       show_dplyr("SELECT id, name, inventor, year, min_age, min_players, max_players, list_price FROM games")
     )), collapse = " ")),
     quote(games %>% select(id, name, inventor, year, min_age, ...))
-  )
-})
-
-test_that("show_dplyr() does not truncate function arguments with newer versions of rlang", {
-  skip_if_not(exists("games"), message = "Test data not loaded")
-  skip_if_not("max_elements" %in% names(formals(rlang::expr_deparse)))
-  expect_equal(
-    str2lang(paste(trimws(capture.output(
-      show_dplyr("SELECT id, name, inventor, year, min_age, min_players, max_players, list_price FROM games")
-    )), collapse = " ")),
-    quote(games %>% select(id, name, inventor, year, min_age, min_players, max_players, list_price))
   )
 })
