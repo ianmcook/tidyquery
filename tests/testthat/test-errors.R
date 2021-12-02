@@ -92,7 +92,11 @@ test_that("query() fails with two identical expressions with no aliases", {
   )
 })
 
-test_that("query() fails on two very long expressions with no aliases", {
+test_that("With older rlang versions, query() fails on two very long expressions with no aliases", {
+  skip_if(
+    packageVersion("rlang") > package_version("0.4.11"),
+    message = "Error only affects rlang 0.4.11 and earlier"
+  )
   expect_error(
     query("SELECT 1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1, 1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+2 FROM games"),
     "alias"
