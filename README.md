@@ -3,18 +3,6 @@
 
 # tidyquery <img src="man/figures/logo.png" align="right" width="120" />
 
-<!-- badges: start -->
-
-[![CRAN
-status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
-[![Travis build
-status](https://travis-ci.com/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.com/ianmcook/tidyquery)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
-[![Codecov test
-coverage](https://codecov.io/gh/ianmcook/tidyquery/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/tidyquery?branch=master)
-<!-- badges: end -->
-
 **tidyquery** runs SQL queries on R data frames.
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to
@@ -198,8 +186,8 @@ reverse: it converts dplyr code into SQL, allowing you to use dplyr to
 work with data in a database.
 
 In **Python**, the
-**[dataframe_sql](https://github.com/zbrookle/dataframe_sql)**
-package (targeting **[pandas](https://pandas.pydata.org)**) and the
-**[sql_to_ibis](https://github.com/zbrookle/sql_to_ibis)** package
-(targeting **[Ibis](https://ibis-project.org)**) are analogous to
+[**dataframe\_sql**](https://github.com/zbrookle/dataframe_sql) package
+(targeting [**pandas**](https://pandas.pydata.org)) and the
+[**sql\_to\_ibis**](https://github.com/zbrookle/sql_to_ibis) package
+(targeting [**Ibis**](https://ibis-project.org)) are analogous to
 tidyquery.

@@ -14,13 +14,6 @@ knitr::opts_chunk$set(
 ```
 # tidyquery <img src="man/figures/logo.png" align="right" width="120" />
 
-<!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
-[![Travis build status](https://travis-ci.com/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.com/ianmcook/tidyquery)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
-[![Codecov test coverage](https://codecov.io/gh/ianmcook/tidyquery/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/tidyquery?branch=master)
-<!-- badges: end -->
-
 **tidyquery** runs SQL queries on R data frames.
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to translate SQL queries into R expressions, then it uses [dplyr](https://dplyr.tidyverse.org) to evaluate these expressions and return results. **tidyquery** does not load data frames into a database; it queries them in place.
@@ -129,3 +122,10 @@ The **sqldf** package ([CRAN](https://cran.r-project.org/package=sqldf), [GitHub
 The **duckdb** package ([CRAN](https://cran.r-project.org/package=duckdb), [GitHub](https://github.com/duckdb/duckdb/tree/master/tools/rpkg)) includes the function `duckdb_register()` which registers an R data frame as a virtual table in a [DuckDB](https://duckdb.org) database, enabling you to run SQL queries on the data frame with `DBI::dbGetQuery()`.
 
 The **[dbplyr](https://dbplyr.tidyverse.org)** package ([CRAN](https://cran.r-project.org/package=dbplyr), [GitHub](https://github.com/tidyverse/dbplyr)) is like tidyquery in reverse: it converts dplyr code into SQL, allowing you to use dplyr to work with data in a database.
+
+In **Python**, the
+ [**dataframe_sql**](https://github.com/zbrookle/dataframe_sql)
+ package (targeting [**pandas**](https://pandas.pydata.org)) and the
+ [**sql_to_ibis**](https://github.com/zbrookle/sql_to_ibis) package
+ (targeting [**Ibis**](https://ibis-project.org)) are analogous to
+ tidyquery.
