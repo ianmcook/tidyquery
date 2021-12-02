@@ -3,6 +3,18 @@
 
 # tidyquery <img src="man/figures/logo.png" align="right" width="120" />
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/tidyquery)](https://cran.r-project.org/package=tidyquery)
+[![Travis build
+status](https://travis-ci.com/ianmcook/tidyquery.svg?branch=master)](https://travis-ci.com/ianmcook/tidyquery)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
+[![Codecov test
+coverage](https://codecov.io/gh/ianmcook/tidyquery/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/tidyquery?branch=master)
+<!-- badges: end -->
+
 **tidyquery** runs SQL queries on R data frames.
 
 It uses [queryparser](https://github.com/ianmcook/queryparser) to
