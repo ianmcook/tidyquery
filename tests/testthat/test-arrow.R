@@ -47,6 +47,26 @@ test_that("Full example #1 returns expected result on ArrowTabular", {
   )
 })
 
+test_that("Simple SELECT example query #1 returns expected result on arrow Dataset", {
+  skip_if_not_installed("arrow")
+  skip_if_not(arrow::arrow_info()$capabilities["dataset"], message = "Arrow Datasets not available")
+
+  tmp <- tempfile()
+  on.exit(unlink(tmp))
+  arrow::write_parquet(iris, tmp)
+  iris_arrow <- arrow::open_dataset(tmp)
+  expect_equal(
+    query(
+      "SELECT Species, COUNT(*) AS n FROM iris_arrow GROUP BY Species"
+    ) %>% collect(),
+    iris_arrow %>%
+      group_by(Species) %>%
+      summarise(n = n()) %>%
+      ungroup() %>%
+      collect()
+  )
+})
+
 test_that("query() fails when input ArrowTabular is grouped", {
   skip_if_not_installed("arrow")
   skip_if_not_installed("nycflights13")
