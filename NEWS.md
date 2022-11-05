@@ -1,3 +1,7 @@
+# tidyquery (development version)
+
+* Continuous integration migrated to GitHub Actions ([#28](https://github.com/ianmcook/tidyquery/issues/28))
+
 # tidyquery 0.2.3
 
 * Accepts names in form `namespace::object` in `FROM` clause ([#22](https://github.com/ianmcook/tidyquery/issues/22))
