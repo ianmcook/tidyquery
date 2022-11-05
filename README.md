@@ -13,6 +13,7 @@ status](https://travis-ci.com/ianmcook/tidyquery.svg?branch=master)](https://tra
 status](https://ci.appveyor.com/api/projects/status/github/ianmcook/tidyquery?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/tidyquery)
 [![Codecov test
 coverage](https://codecov.io/gh/ianmcook/tidyquery/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/tidyquery?branch=master)
+[![R-CMD-check](https://github.com/ianmcook/tidyquery/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ianmcook/tidyquery/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **tidyquery** runs SQL queries on R data frames.
