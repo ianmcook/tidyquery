@@ -26,16 +26,21 @@ deparse <- function(expr, width.cutoff = 500, ...) {
 
 # to support data frame-like objects
 is_supported_data_object <- function(obj) {
-  inherits(obj, c("data.frame", "tbl", "dtplyr_step", "disk.frame"))
+  inherits(
+    obj,
+    c(
+      "data.frame",
+      "tbl",
+      "dtplyr_step",
+      "disk.frame",
+      "arrow_dplyr_query",
+      "ArrowTabular",
+      "Dataset"
+    )
+  )
 }
 is_grouped_data_object <- function(obj) {
-  if (inherits(obj, "tbl_sql") && ("dbplyr" %in% .packages(all.available = TRUE))) {
-    length(dbplyr::op_grps(obj)) > 0
-  } else if (inherits(obj, "dtplyr_step")) {
-    length(obj$groups) > 0
-  } else {
-    inherits(obj, c("grouped_df", "grouped_disk.frame"))
-  }
+  inherits(obj, "grouped_disk.frame") || length(dplyr::group_vars(obj))
 }
 data_object_uses_function_translations <- function(obj) {
   inherits(obj, c("tbl_sql", "dtplyr_step", "disk.frame"))
@@ -43,8 +48,10 @@ data_object_uses_function_translations <- function(obj) {
 column_names <- function(obj) {
   if (inherits(obj, "dtplyr_step")) {
     obj$vars
-  } else {
+  } else if (inherits(obj, "tbl")) {
     colnames(obj)
+  } else {
+    names(obj)
   }
 }
 
