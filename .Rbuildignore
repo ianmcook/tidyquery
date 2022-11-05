@@ -6,3 +6,4 @@ LICENSE
 ^appveyor\.yml$
 ^codecov\.yml$
 ^codecov\.R$
+^\.github$
