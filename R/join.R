@@ -18,6 +18,7 @@ NULL
 #' @importFrom dplyr inner_join left_join right_join full_join semi_join anti_join
 #' @importFrom dplyr rename
 #' @importFrom queryparser column_references
+#' @importFrom rlang inject
 join <- function(tree) {
 
   out <- list()
@@ -218,7 +219,7 @@ join <- function(tree) {
       }
 
       # perfom the join
-      rlang::inject(
+      inject(
         out$data <- out$data %>% join_function(
           data,
           by = join_condition,
