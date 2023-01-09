@@ -27,7 +27,7 @@ Suggests:
     DBI (>= 0.7),
     dbplyr (>= 1.2.1),
     dtplyr (>= 1.0.0),
-    arrow (>= 9.0.0),
+    arrow (>= 10.0.0),
     nycflights13,
     RSQLite (>= 2.1.0),
     testthat (>= 3.0.0)

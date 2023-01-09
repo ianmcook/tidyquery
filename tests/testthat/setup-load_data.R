@@ -2,6 +2,7 @@ suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(nycflights13))
 suppressPackageStartupMessages(library(dbplyr))
 suppressPackageStartupMessages(library(dtplyr))
+suppressPackageStartupMessages(library(arrow))
 
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
@@ -19,12 +20,24 @@ suppressWarnings(tryCatch({
   salary_grades <<- as_tibble(read.table(file = paste0(base_url, "salary_grades.txt"), header = TRUE, sep = "\t", quote = "", stringsAsFactors = FALSE))
   toys          <<- as_tibble(read.table(file = paste0(base_url, "toys.txt"),          header = TRUE, sep = "\t", quote = "", stringsAsFactors = FALSE))
 
+  # dbplyr
   db_con        <<- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   copy_to(db_con, iris, name = "iris_db")
   iris_db       <<- tbl(db_con, "iris_db")
+  copy_to(db_con, flights, name = "flights_db")
+  flights_db    <<- tbl(db_con, "flights_db")
 
+  # dtplyr
   iris_dt       <<- lazy_dt(iris)
   flights_dt    <<- lazy_dt(flights)
+
+  # arrow
+  iris_at       <<- arrow_table(iris)
+  iris_ar       <<- record_batch(iris)
+  iris_ad       <<- InMemoryDataset$create(iris)
+  flights_at    <<- arrow_table(flights)
+  flights_ar    <<- record_batch(flights)
+  flights_ad    <<- InMemoryDataset$create(flights)
 
   invisible(NULL)
 }, error = function(e) {
