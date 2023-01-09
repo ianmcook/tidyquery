@@ -18,6 +18,7 @@ NULL
 #' @importFrom dplyr inner_join left_join right_join full_join semi_join anti_join
 #' @importFrom dplyr rename
 #' @importFrom queryparser column_references
+#' @importFrom rlang inject
 join <- function(tree) {
 
   out <- list()
@@ -181,6 +182,15 @@ join <- function(tree) {
         }
       }
 
+      # These arguments are not present in all join functions. dplyr
+      # has gotten stricter and now fails with unknown arguments
+      # instead of ignoring them. They are removed in the dispatch
+      # structure below.
+      args <- list(
+        suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
+        multiple = "all" # Silence warnings about multiple matches
+      )
+
       # determine which dplyr join function to use
       if (join_type %in% inner_join_types) {
         join_function <- inner_join
@@ -197,19 +207,25 @@ join <- function(tree) {
       } else if (join_type %in% left_semi_join_types) {
         join_function <- semi_join
         join_function_name <- "semi_join"
+        args$suffix <- NULL
+        args$multiple <- NULL
       } else if (join_type %in% left_anti_join_types) {
         join_function <- anti_join
         join_function_name <- "anti_join"
+        args$suffix <- NULL
+        args$multiple <- NULL
       } else {
         stop("Unsupported join type", call. = FALSE)
       }
 
       # perfom the join
-      out$data <- out$data %>% join_function(
-        data,
-        by = join_condition,
-        suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
-        na_matches = "never"
+      inject(
+        out$data <- out$data %>% join_function(
+          data,
+          by = join_condition,
+          na_matches = "never",
+          !!!args,
+        )
       )
       out$code <- paste0(
         out$code, " %>%\n  ",

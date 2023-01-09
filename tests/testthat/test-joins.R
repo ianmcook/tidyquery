@@ -725,7 +725,7 @@ test_that("Natural inner join example query #1 returns expected result", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM offices NATURAL JOIN employees"),
-    offices %>% inner_join(employees)
+    offices %>% inner_join(employees, multiple = "all")
   )
 })
 
@@ -733,7 +733,7 @@ test_that("Natural left outer join example query #1 returns expected result", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM offices NATURAL LEFT OUTER JOIN employees"),
-    offices %>% left_join(employees)
+    offices %>% left_join(employees, multiple = "all")
   )
 })
 
@@ -741,7 +741,7 @@ test_that("Natural right outer join example query #1 returns expected result", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM offices NATURAL RIGHT OUTER JOIN employees"),
-    offices %>% right_join(employees)
+    offices %>% right_join(employees, multiple = "all")
   )
 })
 
@@ -749,7 +749,7 @@ test_that("Natural full outer join example query #1 returns expected result", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_equal(
     query("SELECT * FROM offices NATURAL FULL OUTER JOIN employees"),
-    offices %>% full_join(employees)
+    offices %>% full_join(employees, multiple = "all")
   )
 })
 
