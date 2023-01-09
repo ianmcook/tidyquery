@@ -34,10 +34,9 @@ is_supported_data_object <- function(obj) {
       "dtplyr_step",
       "disk.frame",
       "arrow_dplyr_query",
-      "ArrowTabular",
-      "Dataset"
-    )
-  )
+      "ArrowTabular"
+    )) ||
+    all(inherits(obj, c("Dataset", "ArrowObject"), which = TRUE) != 0L)
 }
 #' @importFrom dplyr group_vars
 is_grouped_data_object <- function(obj) {
