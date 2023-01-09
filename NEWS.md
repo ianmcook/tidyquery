@@ -1,6 +1,8 @@
 # tidyquery (development version)
 
+* Works with Apache Arrow `Table` and `RecordBatch` objects through the [arrow](https://arrow.apache.org/docs/r/) package ([#16](https://github.com/ianmcook/tidyquery/issues/16))
 * Continuous integration migrated to GitHub Actions ([#28](https://github.com/ianmcook/tidyquery/issues/28))
+* Minor changes to support dplyr 1.1.0 ([#29](https://github.com/ianmcook/tidyquery/pull/29))
 
 # tidyquery 0.2.3
 
