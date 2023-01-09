@@ -39,8 +39,9 @@ is_supported_data_object <- function(obj) {
     )
   )
 }
+#' @importFrom dplyr group_vars
 is_grouped_data_object <- function(obj) {
-  inherits(obj, "grouped_disk.frame") || length(dplyr::group_vars(obj))
+  inherits(obj, "grouped_disk.frame") || length(group_vars(obj))
 }
 data_object_uses_function_translations <- function(obj) {
   inherits(obj, c("tbl_sql", "dtplyr_step", "disk.frame"))
