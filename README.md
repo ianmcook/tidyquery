@@ -72,7 +72,7 @@ query(
   ORDER BY num_seats DESC, avg_delay ASC
   LIMIT 2;"
 )
-#> # A tibble: 2 x 5
+#> # A tibble: 2 × 5
 #>   origin dest  num_flts num_seats avg_delay
 #>   <chr>  <chr>    <int>     <dbl>     <dbl>
 #> 1 LGA    DCA       4468    712643         6
@@ -89,7 +89,7 @@ library(dplyr)
 
 airports %>%
   query("SELECT name, lat, lon ORDER BY lat DESC LIMIT 5")
-#> # A tibble: 5 x 3
+#> # A tibble: 5 × 3
 #>   name                                         lat    lon
 #>   <chr>                                      <dbl>  <dbl>
 #> 1 Dillant Hopkins Airport                     72.3   42.9
@@ -107,7 +107,7 @@ planes %>%
   query("SELECT manufacturer AS maker, COUNT(*) AS num_planes GROUP BY maker") %>%
   arrange(desc(num_planes)) %>%
   head(5)
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   maker            num_planes
 #>   <chr>                 <int>
 #> 1 BOEING                 1276
@@ -126,11 +126,14 @@ can be used to query other data frame-like objects, including:
 
 -   `dtplyr_step` objects created with
     [dtplyr](https://dtplyr.tidyverse.org), a
-    [data.table](http://r-datatable.com/) backend for dplyr
+    [data.table](https://r-datatable.com/) backend for dplyr
 -   `tbl_sql` objects created with
     [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package,
     enabling you to write SQL which is translated to dplyr then
-    translated back to SQL and run in a database 🤪
+    translated back to SQL and run in a database (a fun party trick!)
+-   Apache Arrow `Table`, `RecordBatch`, `Dataset`, and
+    `arrow_dplyr_query` objects created with
+    [arrow](https://arrow.apache.org/docs/r/)
 
 ### Using `show_dplyr()`
 
@@ -196,8 +199,8 @@ reverse: it converts dplyr code into SQL, allowing you to use dplyr to
 work with data in a database.
 
 In **Python**, the
-[**dataframe\_sql**](https://github.com/zbrookle/dataframe_sql) package
+[**dataframe_sql**](https://github.com/zbrookle/dataframe_sql) package
 (targeting [**pandas**](https://pandas.pydata.org)) and the
-[**sql\_to\_ibis**](https://github.com/zbrookle/sql_to_ibis) package
+[**sql_to_ibis**](https://github.com/zbrookle/sql_to_ibis) package
 (targeting [**Ibis**](https://ibis-project.org)) are analogous to
 tidyquery.

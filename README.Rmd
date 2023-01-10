@@ -92,8 +92,9 @@ In the `SELECT` statement, the names of data frames and columns are case-sensiti
 
 In addition to R data frames and tibbles (`tbl_df` objects), `query()` can be used to query other data frame-like objects, including:
 
-- `dtplyr_step` objects created with [dtplyr](https://dtplyr.tidyverse.org), a [data.table](http://r-datatable.com/) backend for dplyr 
-- `tbl_sql` objects created with [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package, enabling you to write SQL which is translated to dplyr then translated back to SQL and run in a database `r emo::ji("zany")`
+- `dtplyr_step` objects created with [dtplyr](https://dtplyr.tidyverse.org), a [data.table](https://r-datatable.com/) backend for dplyr 
+- `tbl_sql` objects created with [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package, enabling you to write SQL which is translated to dplyr then translated back to SQL and run in a database (a fun party trick!)
+- Apache Arrow `Table`, `RecordBatch`, `Dataset`, and `arrow_dplyr_query` objects created with [arrow](https://arrow.apache.org/docs/r/)
 
 ### Using `show_dplyr()`
 
