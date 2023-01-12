@@ -1,8 +1,10 @@
 # tidyquery (development version)
 
+* Supports cross joins ([#11](https://github.com/ianmcook/tidyquery/issues/11))
 * Works with Apache Arrow `Table`, `RecordBatch`, and `Dataset` objects through the [arrow](https://arrow.apache.org/docs/r/) package ([#16](https://github.com/ianmcook/tidyquery/issues/16))
 * Continuous integration migrated to GitHub Actions ([#28](https://github.com/ianmcook/tidyquery/issues/28))
-* Minor changes to support dplyr 1.1.0 ([#29](https://github.com/ianmcook/tidyquery/pull/29))
+* Generates the new `join_by()` syntax introduced in dplyr 1.1.0 if you set `options(tidyquery.use_join_by = TRUE)` ([#30](https://github.com/ianmcook/tidyquery/pull/30))
+* Other changes to support dplyr 1.1.0 ([#29](https://github.com/ianmcook/tidyquery/pull/29))
 
 # tidyquery 0.2.3
 
