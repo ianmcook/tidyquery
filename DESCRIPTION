@@ -30,10 +30,11 @@ Suggests:
     arrow (>= 10.0.0),
     nycflights13,
     RSQLite (>= 2.1.0),
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.1.1.9001
+RoxygenNote: 7.2.3
 Collate: 
     'compat.R'
     'query.R'

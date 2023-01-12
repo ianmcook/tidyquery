@@ -21,6 +21,8 @@ NULL
 #' @importFrom rlang inject
 join <- function(tree) {
 
+  use_join_by <- .use_join_by()
+
   out <- list()
 
   join_types <- attr(tree$from, "join_types")
@@ -115,6 +117,25 @@ join <- function(tree) {
         )
       )
 
+      if (use_join_by) {
+        left_table_join_column_names <- vapply(
+          join_condition,
+          function(x) {if (typeof(x) == "symbol") deparse(x) else deparse(x[[2]])},
+          ""
+        )
+        right_table_join_column_names <- vapply(
+          join_condition,
+          function(x) {if (typeof(x) == "symbol") deparse(x) else deparse(x[[3]])},
+          ""
+        )
+      } else {
+        left_table_join_column_names <- c(
+          if (is.null(names(join_condition))) join_condition else names(join_condition),
+          unname(join_condition)[names(join_condition) == ""]
+        )
+        right_table_join_column_names <- unname(join_condition)
+      }
+
       left_table_suffix <- replace_empty_name_with_value(names(left_table_ref), as.character(left_table_ref))
       right_table_suffix <- replace_empty_name_with_value(names(right_table_ref), as.character(right_table_ref))
 
@@ -135,7 +156,7 @@ join <- function(tree) {
           as.character(right_table_ref),
           if (!is.null(names(right_table_ref)) && names(right_table_ref) != "") names(right_table_ref)
         )
-        right_table_join_columns <- paste(right_table_refs, unname(join_condition), sep = ".")
+        right_table_join_columns <- paste(right_table_refs, right_table_join_column_names, sep = ".")
         bad_right_table_columns <- right_table_join_columns %in% column_refs
       }
       if (join_type %in% c(right_outer_join_types, full_outer_join_types)) {
@@ -143,14 +164,7 @@ join <- function(tree) {
           as.character(left_table_ref),
           if (!is.null(names(left_table_ref)) && names(left_table_ref) != "") names(left_table_ref)
         )
-        left_table_join_columns <- paste(
-          left_table_refs,
-          c(
-            if (is.null(names(join_condition))) join_condition else names(join_condition),
-            unname(join_condition)[names(join_condition) == ""]
-          ),
-          sep = "."
-        )
+        left_table_join_columns <- paste(left_table_refs, left_table_join_column_names, sep = ".")
         bad_left_table_columns <- left_table_join_columns %in% column_refs
       }
       if (join_type %in% left_outer_join_types) {
@@ -187,7 +201,9 @@ join <- function(tree) {
       # instead of ignoring them. They are removed in the dispatch
       # structure below.
       args <- list(
+        by = c(), # placeholder to keep order
         suffix = c(paste0(".", left_table_suffix), paste0(".", right_table_suffix)),
+        na_matches = "never",
         multiple = "all" # Silence warnings about multiple matches
       )
 
@@ -214,25 +230,75 @@ join <- function(tree) {
         join_function_name <- "anti_join"
         args$suffix <- NULL
         args$multiple <- NULL
+      } else if (join_type %in% cross_join_types) {
+        if (.use_cross_join) {
+          join_function <- eval(str2lang("cross_join"))
+          join_function_name <- "cross_join"
+        } else {
+          join_function <- full_join
+          join_function_name <- "full_join"
+        }
+        args$suffix <- NULL
+        args$na_matches <- NULL
+        args$multiple <- NULL
       } else {
         stop("Unsupported join type", call. = FALSE)
       }
 
-      # perfom the join
-      inject(
-        out$data <- out$data %>% join_function(
-          data,
-          by = join_condition,
-          na_matches = "never",
-          !!!args,
+      # standardize the representation of join conditions
+      if (join_type %in% cross_join_types) {
+
+        if (.use_cross_join) {
+          args$by <- NULL
+          join_condition <- NULL
+        } else {
+          args$by <- character()
+          join_condition <- quote(character())
+        }
+
+      } else {
+
+        if (use_join_by) {
+          args$by <- NULL
+          if (!is.null(join_condition) && !is.list(join_condition)) {
+            join_condition <- list(join_condition)
+          }
+        } else {
+          args$by <- join_condition
+        }
+
+      }
+
+      # perform the join
+      if (use_join_by) {
+        inject(
+          out$data <- out$data %>% join_function(
+            data,
+            if (!is.null(join_condition[[1]])) eval(str2lang("join_by"))(!!!join_condition),
+            !!!args,
+          )
         )
-      )
+      } else {
+        inject(
+          out$data <- out$data %>% join_function(
+            data,
+            !!!args
+          )
+        )
+      }
+      if (length(args) > 0) {
+        deparsed_args <- lapply(args, deparse)
+        deparsed_args <- paste(paste(names(deparsed_args), "=", deparsed_args), collapse = ", ")
+        deparsed_args <- paste(",", deparsed_args)
+      } else {
+        deparsed_args <- ""
+      }
       out$code <- paste0(
         out$code, " %>%\n  ",
         join_function_name, "(", as.character(right_table_ref),
-        ", by = ", deparse(join_condition),
-        ", suffix = c(\".", left_table_suffix, "\", \".", right_table_suffix, "\")",
-        ", na_matches = \"never\")"
+        deparsed_args,
+        ")"
+        # TBD: fix this so it actually captures what's in args!
       )
 
       # check for suffixes, and if found, change them to prefixes
@@ -280,6 +346,7 @@ translate_join_condition <- function(condition, all_table_refs, left_table_ref,
 }
 
 get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, left_table_columns, right_table_columns) {
+  use_join_by <- .use_join_by()
   if (identical(typeof(expr), "language")) {
     if (identical(expr[[1]], quote(`==`))) {
       table_1_ref <- get_prefix(expr[[2]], all_table_refs)
@@ -290,9 +357,11 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
         if (column_1_ref %in% left_table_columns && column_1_ref %in% right_table_columns) {
           if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref)))) &&
             (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))))) {
+            if (use_join_by) return(str2lang(column_1_ref))
             return(as.character(column_1_ref))
           } else if ((is.null(table_1_ref) || isTRUE(table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref)))) &&
             (is.null(table_2_ref) || isTRUE(table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))))) {
+            if (use_join_by) return(str2lang(column_1_ref))
             return(as.character(column_1_ref))
           } else {
             stop("Invalid join conditions", call. = FALSE)
@@ -302,8 +371,10 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
         }
       } else if (is.null(table_1_ref) && is.null(table_2_ref)) {
         if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
+          if (use_join_by) return(str2lang(paste(column_1_ref, "==", column_2_ref)))
           return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
         } else if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
+          if (use_join_by) return(str2lang(paste(column_2_ref, "==", column_1_ref)))
           return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
         } else {
           stop("Invalid join conditions", call. = FALSE)
@@ -311,12 +382,14 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
       } else if (is.null(table_1_ref)) {
         if (table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
+            if (use_join_by) return(str2lang(paste(column_2_ref, "==", column_1_ref)))
             return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
         } else if (table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
           if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
+            if (use_join_by) return(str2lang(paste(column_1_ref, "==", column_2_ref)))
             return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
@@ -327,12 +400,14 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
       } else if (is.null(table_2_ref)) {
         if (table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
+            if (use_join_by) return(str2lang(paste(column_1_ref, "==", column_2_ref)))
             return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
           }
         } else if (table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
           if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
+            if (use_join_by) return(str2lang(paste(column_2_ref, "==", column_1_ref)))
             return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
           } else {
             stop("Invalid join conditions", call. = FALSE)
@@ -344,6 +419,7 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
         if (table_1_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (table_2_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
             if (column_1_ref %in% left_table_columns && column_2_ref %in% right_table_columns) {
+              if (use_join_by) return(str2lang(paste(column_1_ref, "==", column_2_ref)))
               return(structure(as.character(column_2_ref), .Names = as.character(column_1_ref)))
             } else {
               stop("Invalid join conditions", call. = FALSE)
@@ -354,6 +430,7 @@ get_join_by <- function(expr, all_table_refs, left_table_ref, right_table_ref, l
         } else if (table_2_ref %in% c(names(left_table_ref), as.character(left_table_ref))) {
           if (table_1_ref %in% c(names(right_table_ref), as.character(right_table_ref))) {
             if (column_1_ref %in% right_table_columns && column_2_ref %in% left_table_columns) {
+              if (use_join_by) return(str2lang(paste(column_2_ref, "==", column_1_ref)))
               return(structure(as.character(column_1_ref), .Names = as.character(column_2_ref)))
             } else {
               stop("Invalid join conditions", call. = FALSE)
@@ -423,6 +500,6 @@ left_anti_join_types <- c(
   "left anti join",
   "natural left anti join"
 )
-
-# TBD: implement cross joins after implemented in dplyr
-# (see https://github.com/tidyverse/dplyr/issues/4206)
+cross_join_types <- c(
+  "cross join"
+)

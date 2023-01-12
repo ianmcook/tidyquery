@@ -753,6 +753,22 @@ test_that("Natural full outer join example query #1 returns expected result", {
   )
 })
 
+test_that("Cross join returns expected result", {
+  skip_if_not(exists("card_rank") && exists("card_suit"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT rank, suit FROM card_rank CROSS JOIN card_suit;"),
+    if (exists("cross_join", where = "package:dplyr", mode = "function")) {
+      card_rank %>%
+        eval(str2lang("cross_join"))(card_suit) %>%
+        select(rank, suit)
+    } else {
+      card_rank %>%
+        full_join(card_suit, by = character(0)) %>%
+        select(rank, suit)
+    }
+  )
+})
+
 test_that("Natural join example query generates the expected message", {
   skip_if_not(exists("offices") && exists("employees"), message = "Test data not loaded")
   expect_message(
@@ -773,14 +789,6 @@ test_that("Right semi-join fails", {
   skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
   expect_error(
     query("SELECT name, list_price FROM inventory i RIGHT SEMI JOIN games g ON i.game = g.name"),
-    "Unsupported"
-  )
-})
-
-test_that("Cross join fails", {
-  skip_if_not(exists("card_rank") && exists("card_suit"), message = "Test data not loaded")
-  expect_error(
-    query("SELECT rank, suit FROM card_rank CROSS JOIN card_suit;"),
     "Unsupported"
   )
 })
@@ -822,5 +830,29 @@ test_that("Inner join does not match NAs", {
       query("select COUNT(*) FROM join_test_na_match_data_x JOIN join_test_na_match_data_y USING (k1)") %>% pull(1)
     },
     2L
+  )
+})
+
+
+test_that("Join with one join condition successfully runs with join_by() syntax enabled", {
+  withr::local_options(list(tidyquery.use_join_by = TRUE))
+  skip_if(packageVersion("dplyr") < "1.1.0", message = "Test requires dplyr 1.1.0 or higher")
+  skip_if_not(exists("flights") && exists("airlines"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT concat_ws(' ', 'Now boarding', name, 'flight', CAST(flight AS string))
+             FROM flights f JOIN airlines a USING (carrier)"),
+    flights %>%
+      inner_join(airlines, by = "carrier") %>%
+      transmute(stringr::str_c("Now boarding", name, "flight", as.character(flight), sep = " "))
+  )
+})
+
+test_that("Join with two join conditions successfully runs with join_by() syntax enabled", {
+  withr::local_options(list(tidyquery.use_join_by = TRUE))
+  skip_if(packageVersion("dplyr") < "1.1.0", message = "Test requires dplyr 1.1.0 or higher")
+  skip_if_not(exists("inventory") && exists("games"), message = "Test data not loaded")
+  expect_equal(
+    query("SELECT * FROM inventory INNER JOIN games ON inventory.game = games.name AND inventory.price = games.list_price"),
+    inventory %>% inner_join(games, by = c(game = "name", price = "list_price"))
   )
 })

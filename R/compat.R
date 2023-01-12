@@ -55,10 +55,25 @@ column_names <- function(obj) {
   }
 }
 
+# Export version number for use by queryparser
+#' @export
+#' @importFrom utils packageVersion
+.tidyquery.version <- packageVersion("tidyquery")
+
+# Use join_by() syntax for join conditions?
+# This is introduced in dplyr 1.1.0, but as of early January 2023 it is not yet
+# supported by some backends, so we default to not using it for compatibility.
+.use_join_by <- function() getOption("tidyquery.use_join_by", default = FALSE)
+
+# Use cross_join() function for cross joins?
+# This is introduced in dplyr 1.1.0. Earlier versions of dplyr used the syntax
+# full_join(..., by = character()) for cross joins.
+#' @importFrom utils getFromNamespace
+.use_cross_join <-  tryCatch({
+  getFromNamespace("cross_join", "dplyr")
+  TRUE
+}, error = function(...) { FALSE })
+
 # Temporary fix for https://github.com/tidyverse/dtplyr/issues/184
 #' @export
 .datatable.aware <- TRUE
-
-# Export version number for use by queryparser
-#' @export
-.tidyquery.version <- packageVersion("tidyquery")
