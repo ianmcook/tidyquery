@@ -16,9 +16,9 @@ License: Apache License 2.0
 URL: https://github.com/ianmcook/tidyquery
 BugReports: https://github.com/ianmcook/tidyquery/issues
 Imports: 
-    dplyr (>= 0.7.4),
+    dplyr (>= 1.0.0),
     lubridate (>= 1.6.0),
-    queryparser (>= 0.3.1),
+    queryparser (>= 0.3.2),
     rlang (>= 0.4.9),
     stringr (>= 1.0.0),
     utils
