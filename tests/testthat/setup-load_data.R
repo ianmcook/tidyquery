@@ -26,10 +26,13 @@ suppressWarnings(tryCatch({
   iris_db       <<- tbl(db_con, "iris_db")
   copy_to(db_con, flights, name = "flights_db")
   flights_db    <<- tbl(db_con, "flights_db")
+  copy_to(db_con, planes, name = "planes_db")
+  planes_db     <<- tbl(db_con, "planes_db")
 
   # dtplyr
   iris_dt       <<- lazy_dt(iris)
   flights_dt    <<- lazy_dt(flights)
+  planes_dt    <<- lazy_dt(planes)
 
   # arrow
   iris_at       <<- arrow_table(iris)
@@ -38,6 +41,9 @@ suppressWarnings(tryCatch({
   flights_at    <<- arrow_table(flights)
   flights_ar    <<- record_batch(flights)
   flights_ad    <<- InMemoryDataset$create(flights)
+  planes_at    <<- arrow_table(planes)
+  planes_ar    <<- record_batch(planes)
+  planes_ad    <<- InMemoryDataset$create(planes)
 
   invisible(NULL)
 }, error = function(e) {
