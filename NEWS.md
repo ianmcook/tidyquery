@@ -1,5 +1,6 @@
-# tidyquery (development version)
+# tidyquery 0.2.4
 
+* Requires dplyr version 1.0.0 or higher
 * Supports cross joins ([#11](https://github.com/ianmcook/tidyquery/issues/11))
 * Works with Apache Arrow `Table`, `RecordBatch`, and `Dataset` objects through the [arrow](https://arrow.apache.org/docs/r/) package ([#16](https://github.com/ianmcook/tidyquery/issues/16))
 * Continuous integration migrated to GitHub Actions ([#28](https://github.com/ianmcook/tidyquery/issues/28))
