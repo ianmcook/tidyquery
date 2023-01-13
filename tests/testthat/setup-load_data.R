@@ -2,7 +2,9 @@ suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(nycflights13))
 suppressPackageStartupMessages(library(dbplyr))
 suppressPackageStartupMessages(library(dtplyr))
-suppressPackageStartupMessages(library(arrow))
+if (requireNamespace("arrow", quietly = TRUE)) {
+  suppressPackageStartupMessages(library(arrow))
+}
 
 base_url <- "https://raw.githubusercontent.com/ianmcook/coursera-datasets/master/"
 suppressWarnings(tryCatch({
@@ -35,15 +37,17 @@ suppressWarnings(tryCatch({
   planes_dt    <<- lazy_dt(planes)
 
   # arrow
-  iris_at       <<- arrow_table(iris)
-  iris_ar       <<- record_batch(iris)
-  iris_ad       <<- InMemoryDataset$create(iris)
-  flights_at    <<- arrow_table(flights)
-  flights_ar    <<- record_batch(flights)
-  flights_ad    <<- InMemoryDataset$create(flights)
-  planes_at    <<- arrow_table(planes)
-  planes_ar    <<- record_batch(planes)
-  planes_ad    <<- InMemoryDataset$create(planes)
+  if ("package:arrow" %in% search()) {
+    iris_at       <<- arrow_table(iris)
+    iris_ar       <<- record_batch(iris)
+    iris_ad       <<- InMemoryDataset$create(iris)
+    flights_at    <<- arrow_table(flights)
+    flights_ar    <<- record_batch(flights)
+    flights_ad    <<- InMemoryDataset$create(flights)
+    planes_at    <<- arrow_table(planes)
+    planes_ar    <<- record_batch(planes)
+    planes_ad    <<- InMemoryDataset$create(planes)
+  }
 
   invisible(NULL)
 }, error = function(e) {
