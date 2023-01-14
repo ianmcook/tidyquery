@@ -127,13 +127,13 @@ can be used to query other data frame-like objects, including:
 -   `dtplyr_step` objects created with
     [dtplyr](https://dtplyr.tidyverse.org), a
     [data.table](https://r-datatable.com/) backend for dplyr
+-   Apache Arrow `Table`, `RecordBatch`, `Dataset`, and
+    `arrow_dplyr_query` objects created with
+    [arrow](https://arrow.apache.org/docs/r/)
 -   `tbl_sql` objects created with
     [dbplyr](https://dbplyr.tidyverse.org) or a dbplyr backend package,
     enabling you to write SQL which is translated to dplyr then
     translated back to SQL and run in a database (a fun party trick!)
--   Apache Arrow `Table`, `RecordBatch`, `Dataset`, and
-    `arrow_dplyr_query` objects created with
-    [arrow](https://arrow.apache.org/docs/r/)
 
 ### Using `show_dplyr()`
 
@@ -175,6 +175,9 @@ or
     queries and outer join queries with qualified references to the join
     column(s). Planned changes in dplyr will enable future versions of
     tidyquery to support more types of joins.
+-   In the code printed by `show_dplyr()`, calls to functions with more
+    than five arguments might be truncated, with arguments after the
+    fifth replaced with `...`
 
 ## Related Work
 

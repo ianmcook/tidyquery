@@ -23,8 +23,7 @@
 #'   dplyr code like \code{query} does, \code{show_dplyr} prints the dplyr code.
 #'
 #'   In function calls in the printed code, long lists of arguments may be
-#'   truncated and appended with \code{...} if you have an older version of the
-#'   rlang package installed. To fix this, update to a newer version of rlang.
+#'   truncated and appended with \code{...}.
 #' @examples
 #' library(dplyr)
 #' library(nycflights13)
