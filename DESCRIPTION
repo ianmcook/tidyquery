@@ -1,7 +1,7 @@
 Type: Package
 Package: tidyquery
 Title: Query 'R' Data Frames with 'SQL'
-Version: 0.2.4
+Version: 0.2.4.9000
 Authors@R: 
     c(person(given = "Ian",
              family = "Cook",
